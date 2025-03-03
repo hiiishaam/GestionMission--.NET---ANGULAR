@@ -9,5 +9,7 @@ namespace GestionMission.Data
         {
         }
         public DbSet<Employer> employers { get; set; }
+        public DbSet<Fonction> fonctions { get; set; }
+        public DbSet<Affectation> affectations { get; set; }
     }
 }

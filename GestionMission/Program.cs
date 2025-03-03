@@ -1,4 +1,6 @@
 using GestionMission.Data;
+using GestionMission.Interfaces;
+using GestionMission.Services;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -14,7 +16,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
     builder.Configuration.GetConnectionString("MyConnection")
     ));
-
+builder.Services.AddScoped<IAffectationService, AffectationService>();
+builder.Services.AddScoped<IFonctionService, FonctionService>();
+builder.Services.AddScoped<IEmployerService, EmployerService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

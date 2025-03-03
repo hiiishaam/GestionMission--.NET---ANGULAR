@@ -11,5 +11,13 @@ namespace GestionMission.Entities
         [Required]
         [StringLength(50)]
         public string Prenom { get; set; }
+
+        // Clé étrangère optionnelle vers Fonction
+        public int? FonctionId { get; set; }
+        public Fonction? Fonction { get; set; }
+
+        // Clé étrangère optionnelle vers Affectation
+        public int? AffectationId { get; set; }
+        public Affectation? Affectation { get; set; }
     }
 }
