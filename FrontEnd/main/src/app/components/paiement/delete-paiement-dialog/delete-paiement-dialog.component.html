@@ -1,0 +1,10 @@
+<h5 mat-dialog-title >Êtes-vous sûr ?</h5>
+<div mat-dialog-content class="f-s-14 lh-16">
+  Êtes-vous sûr de vouloir supprimer cet paiement ?
+</div>
+<div mat-dialog-actions class="p-24 p-t-0">
+<button mat-flat-button class="bg-error text-white" mat-dialog-close (click)="NON()">
+No
+</button>
+<button mat-flat-button mat-dialog-close cdkFocusInitial (click)="OUI()">Ok</button>
+</div>

@@ -19,5 +19,7 @@ namespace GestionMission.Entities
         // Clé étrangère optionnelle vers Affectation
         public int? AffectationId { get; set; }
         public Affectation? Affectation { get; set; }
+
+        public bool Actif { get; set; }
     }
 }

@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>Créer une mission</h2>
+<mat-dialog-content>
+  <!-- Section pour créer la mission -->
+ 
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Nom de la mission</mat-label>
+      <input matInput [(ngModel)]="data.data.name" placeholder="Entrez le nom de la mission">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Description</mat-label>
+      <textarea matInput [(ngModel)]="data.data.description" placeholder="Entrez la description"></textarea>
+    </mat-form-field>
+
+    <button mat-button (click)="onCancel()">Annuler</button>
+    <button mat-raised-button color="primary" (click)="Addm()">Créer la mission</button>
+ 
+
+  <!-- Section pour assigner des employés (s'affiche uniquement si la mission est créée) -->
+  <div *ngIf="data.data.id && data.data.id > 0">
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Assigner des employés</mat-label>
+      <input matInput [(ngModel)]="data.data.name" placeholder="Entrez le nom de la mission">
+    </mat-form-field>
+    <button mat-raised-button color="accent" (click)="onCancel()">Assigner à la mission</button>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-raised-button color="warn" (click)="onCancel()">Annuler</button>
+  <button mat-raised-button color="primary" (click)="onCancel()">Enregistrer</button>
+</mat-dialog-actions>

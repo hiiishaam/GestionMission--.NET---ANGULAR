@@ -19,6 +19,14 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(
 builder.Services.AddScoped<IAffectationService, AffectationService>();
 builder.Services.AddScoped<IFonctionService, FonctionService>();
 builder.Services.AddScoped<IEmployerService, EmployerService>();
+builder.Services.AddScoped<IStatutService, StatutService>();
+builder.Services.AddScoped<IVehiculeService, VehiculeService>();
+builder.Services.AddScoped<ICongeService, CongeService>();
+builder.Services.AddScoped<IMissionService, MissionService>();
+builder.Services.AddScoped<ITeamService, TeamService>();
+builder.Services.AddScoped<IPaimentService, PaimentService>();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -1,0 +1,23 @@
+<mat-dialog-content>
+  <h3>Éditer l'employé</h3>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Nom</mat-label>
+    <input matInput [(ngModel)]="data.data.name" placeholder="Entrez le nom">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Poste</mat-label>
+    <input matInput [(ngModel)]="data.data.position" placeholder="Entrez le poste">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Salaire</mat-label>
+    <input matInput type="number" [(ngModel)]="data.data.salary" placeholder="Entrez le salaire">
+  </mat-form-field>
+
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="save()">Enregistrer</button>
+    <button mat-raised-button color="warn" (click)="onCancel()">Annuler</button>
+  </mat-dialog-actions>
+</mat-dialog-content>

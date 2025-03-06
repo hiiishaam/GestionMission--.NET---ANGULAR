@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>Ajouter une fonction</h2>
+<br/>
+<mat-dialog-content>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Nom</mat-label>
+    <input matInput [(ngModel)]="data.data.name">
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions >
+  <button mat-button (click)="onCancel()">Annuler</button>
+  <button mat-raised-button color="primary" (click)="Add()">Ajouter</button>
+</mat-dialog-actions>
