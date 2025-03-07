@@ -1,5 +1,23 @@
 import { Injectable } from '@angular/core';
 import { Employee,Fonction,Affectation,Vehicule,Mission,Paiement } from '../model/Models';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+
+
+@Injectable({ providedIn: 'root' })
+export class ApiService {
+  private apiUrl = 'https://localhost:7285/api/'; // Remplace avec ton URL API
+
+  constructor(private http: HttpClient) {}
+
+  getAllData(path:string): Observable<any> {
+    return this.http.get<any>(this.apiUrl+path);
+  }
+
+  postData(path:string, data: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl+path, data);
+  }
+}
 
 @Injectable({ providedIn: 'root' })
 
@@ -63,7 +81,12 @@ export class AffectationService {
     { id: 2, name: 'Affectation 2',actif:true }
   ];
 
+  private apiPath = 'Affectation'; 
+
+  constructor(private apiService: ApiService) {}
+
   Get(): Affectation[] {
+   // let res = this.apiService.getAllData(this.apiPath);
     return [...this.data];
   }
 
