@@ -9,6 +9,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatSelectModule } from '@angular/material/select';
 import { MatOptionModule } from '@angular/material/core';
 
+
 @Component({
   selector: 'app-add-employee-dialog',
   standalone: true,
@@ -20,17 +21,18 @@ import { MatOptionModule } from '@angular/material/core';
     MatButtonModule,
     MatDialogModule,
     MatSelectModule,
-    MatOptionModule 
+    MatOptionModule ,
+    MatSelectModule
   ],
   templateUrl: './add-employee-dialog.component.html'
 })
-export class Add {
+export class AddEmployee {
   constructor(
-    public dialogRef: MatDialogRef<Add>,
+    public dialogRef: MatDialogRef<AddEmployee>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
-  Add(): void {
+  save(): void {
     this.dialogRef.close(this.data.data);
   }
 

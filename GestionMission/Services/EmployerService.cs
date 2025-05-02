@@ -15,7 +15,7 @@ namespace GestionMission.Services
         }
 
         // Ajouter un employé
-        public Employer Add(Employer employer)
+        public Employee Add(Employee employer)
         {
             if (employer == null)
                 throw new ArgumentNullException(nameof(employer));
@@ -38,16 +38,17 @@ namespace GestionMission.Services
                     employer.Affectation = affectation;
                 }
             }
-
-            _db.employers.Add(employer);
+            employer.CreateDate = DateTime.UtcNow;
+            employer.UpdateDate = DateTime.UtcNow;
+            _db.employees.Add(employer);
             _db.SaveChanges();
             return employer;
         }
 
         // Supprimer un employé
-        public Employer Delete(int id)
+        public Employee Delete(int id)
         {
-            var employer = _db.employers.Find(id);
+            var employer = _db.employees.Find(id);
             if (employer == null)
                 return null; // Employer non trouvé, retourne null
 
@@ -55,42 +56,45 @@ namespace GestionMission.Services
             employer.Fonction = null;
             employer.Affectation = null;
 
-            _db.employers.Remove(employer);
+            _db.employees.Remove(employer);
             _db.SaveChanges();
             return employer;
         }
 
         // Trouver tous les employés
-        public List<Employer> FindAll()
+        public List<Employee> FindAll()
         {
-            return _db.employers.Include(e => e.Fonction).Include(e => e.Affectation).ToList();
+            return _db.employees.Include(e => e.Fonction).Include(e => e.Affectation).ToList();
         }
 
         // Trouver un employé par ID
-        public Employer FindById(int id)
+        public Employee FindById(int id)
         {
-            return _db.employers.Include(e => e.Fonction).Include(e => e.Affectation).FirstOrDefault(e => e.Id == id);
+            return _db.employees.Include(e => e.Fonction).Include(e => e.Affectation).FirstOrDefault(e => e.Id == id);
         }
 
         // Trouver un employé par son nom
-        public List<Employer> FindByNom(string nom)
+        public List<Employee> FindByNom(string nom)
         {
             if (string.IsNullOrEmpty(nom))
-                return new List<Employer>(); // Evite les recherches inutiles
+                return new List<Employee>(); // Evite les recherches inutiles
 
-            return _db.employers.Include(e => e.Fonction).Include(e => e.Affectation)
-                                .Where(e => e.Nom.Contains(nom)).ToList();
+            return _db.employees.Include(e => e.Fonction).Include(e => e.Affectation)
+                                .Where(e => e.FirstName.Contains(nom)).ToList();
         }
 
         // Mettre à jour un employé
-        public Employer Update(Employer employer, int id)
+        public Employee Update(Employee employer, int id)
         {
-            var existingEmployer = _db.employers.Find(id);
+            var existingEmployer = _db.employees.Find(id);
             if (existingEmployer == null)
                 return null; // Employer non trouvé
 
-            existingEmployer.Nom = employer.Nom;
-            existingEmployer.Prenom = employer.Prenom;
+            existingEmployer.FirstName = employer.FirstName;
+            existingEmployer.LastName = employer.LastName;
+            existingEmployer.Actif = employer.Actif;
+            existingEmployer.UpdatedById = employer.UpdatedById;
+            existingEmployer.UpdateDate = DateTime.UtcNow;
 
             // Mettre à jour les relations, si elles existent
             if (employer.FonctionId.HasValue)

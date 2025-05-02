@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-
+import { AuthGuard } from './../authentication/auth.guard';
 // ui
 //import { AppFormsComponent } from './forms/forms.component';
 import { AppEmployeeComponent } from 'src/app/components/employee/employee.component';
@@ -13,6 +13,7 @@ import { AppVehiculeComponent } from 'src/app/components/vehicule/vehicule.compo
 export const UiComponentsRoutes: Routes = [
   {
     path: '',
+    canActivateChild: [AuthGuard],
     children: [
       {
         path: 'affectation',

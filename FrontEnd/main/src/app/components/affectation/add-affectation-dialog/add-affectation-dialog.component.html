@@ -3,11 +3,18 @@
 <mat-dialog-content>
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>Nom</mat-label>
-    <input matInput [(ngModel)]="data.data.name">
+    <input matInput [(ngModel)]="data.data.name" name="name">
+
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Actif</mat-label>
+    <mat-select [(ngModel)]="data.data.actif" name="actif">
+      <mat-option [value]="true">Oui</mat-option>
+      <mat-option [value]="false">Non</mat-option>
+    </mat-select>
   </mat-form-field>
 </mat-dialog-content>
-
 <mat-dialog-actions >
   <button mat-button (click)="onCancel()">Annuler</button>
-  <button mat-raised-button color="primary" (click)="Add()">Ajouter</button>
+  <button mat-raised-button color="primary" (click)="save()">Ajouter</button>
 </mat-dialog-actions>

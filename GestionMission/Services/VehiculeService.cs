@@ -16,6 +16,8 @@ namespace GestionMission.Services
 
         public Vehicule Add(Vehicule vehicule)
         {
+            vehicule.CreateDate = DateTime.UtcNow;
+            vehicule.UpdateDate = DateTime.UtcNow;
             _db.vehicules.Add(vehicule);
             _db.SaveChanges();
             return vehicule;
@@ -44,7 +46,7 @@ namespace GestionMission.Services
 
         public List<Vehicule> FindByNom(string nom)
         {
-            return _db.vehicules.Where(e => e.Nom.Contains(nom)).ToList();
+            return _db.vehicules.Where(e => e.Name.Contains(nom)).ToList();
         }
 
         public Vehicule Update(Vehicule vehicule, int id)
@@ -52,10 +54,12 @@ namespace GestionMission.Services
             var existingVehicule = _db.vehicules.Find(id);
             if (existingVehicule != null)
             {
-                existingVehicule.Nom = vehicule.Nom;
-                existingVehicule.Matricule = vehicule.Matricule;
-                existingVehicule.Chevaux = vehicule.Chevaux;
+                existingVehicule.Name = vehicule.Name;
+                existingVehicule.LicensePlateNumber = vehicule.LicensePlateNumber;
+                existingVehicule.Horsepower = vehicule.Horsepower;
                 existingVehicule.Actif = vehicule.Actif;
+                existingVehicule.UpdatedById = vehicule.UpdatedById;
+                existingVehicule.UpdateDate = DateTime.UtcNow;
                 _db.SaveChanges();
             }
             return existingVehicule;

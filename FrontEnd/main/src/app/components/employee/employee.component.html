@@ -25,18 +25,18 @@
 
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef> Nom </th>
-      <td mat-cell *matCellDef="let data"> {{ data.name }} </td>
+      <td mat-cell *matCellDef="let data"> {{ data.firstName }} </td>
     </ng-container>
 
     <ng-container matColumnDef="prenom">
       <th mat-header-cell *matHeaderCellDef> Prénom </th>
-      <td mat-cell *matCellDef="let data"> {{ data.prenom }} </td>
+      <td mat-cell *matCellDef="let data"> {{ data.lastName }} </td>
     </ng-container>
 
     <ng-container matColumnDef="fonction">
       <th mat-header-cell *matHeaderCellDef> Fonction </th>
       <td mat-cell *matCellDef="let data">
-        {{ getFonctionLibelle(data.fonctionId) }}
+        {{ getFonctionLibelle(data.fonctionId)  || 'Non défini'  }}
       </td>
     </ng-container>
 

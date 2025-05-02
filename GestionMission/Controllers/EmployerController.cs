@@ -20,14 +20,14 @@ namespace GestionMission.Controllers
 
         // GET: api/employer
         [HttpGet]
-        public ActionResult<List<Employer>> GetAll()
+        public ActionResult<List<Employee>> GetAll()
         {
             return Ok(_service.FindAll());
         }
 
         // GET: api/employer/{id}
         [HttpGet("{id}")]
-        public ActionResult<Employer> GetById(int id)
+        public ActionResult<Employee> GetById(int id)
         {
             var employer = _service.FindById(id);
             if (employer == null)
@@ -38,7 +38,7 @@ namespace GestionMission.Controllers
 
         // GET: api/employer/byname/{nom}
         [HttpGet("byname/{nom}")]
-        public ActionResult<List<Employer>> GetByName(string nom)
+        public ActionResult<List<Employee>> GetByName(string nom)
         {
             var employers = _service.FindByNom(nom);
             if (employers.Count == 0)
@@ -49,7 +49,7 @@ namespace GestionMission.Controllers
 
         // POST: api/employer
         [HttpPost]
-        public ActionResult<Employer> Create([FromBody] Employer employer)
+        public ActionResult<Employee> Create([FromBody] Employee employer)
         {
             if (employer == null)
                 return BadRequest("Les données de l'employé sont invalides.");
@@ -60,7 +60,7 @@ namespace GestionMission.Controllers
 
         // PUT: api/employer/{id}
         [HttpPut("{id}")]
-        public ActionResult<Employer> Update(int id, [FromBody] Employer employer)
+        public ActionResult<Employee> Update(int id, [FromBody] Employee employer)
         {
             if (employer == null)
                 return BadRequest("Les données de l'employé sont invalides.");

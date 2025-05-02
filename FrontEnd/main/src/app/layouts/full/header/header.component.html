@@ -22,10 +22,10 @@
   <mat-menu #profilemenu="matMenu" class="topbar-dd cardWithShadow">
     <button mat-menu-item>
       <mat-icon class="d-flex align-items-center"><i data-icon="solar:shield-user-line-duotone"
-          class="iconify icon-22"></i></mat-icon>My Profile
+          class="iconify icon-22"></i></mat-icon> Bienvenue, {{ user.username }}
     </button>
     <div class="p-x-12 m-t-12">
-      <a [routerLink]="['/authentication/login']" mat-stroked-button class="w-100">Logout</a>
+      <a  mat-stroked-button class="w-100" (click)="logout()">Logout</a>
     </div>
   </mat-menu>
 </mat-toolbar>

@@ -18,7 +18,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 
-import { Add } from './add-vehicule-dialog/add-vehicule-dialog.component';
+import { AddVehiculeDialogComponent } from './add-vehicule-dialog/add-vehicule-dialog.component';
 import { Edit } from './edit-vehicule-dialog/edit-vehicule-dialog.component';
 import { Delete } from './delete-vehicule-dialog/delete-vehicule-dialog.component';
 
@@ -41,7 +41,7 @@ import { Delete } from './delete-vehicule-dialog/delete-vehicule-dialog.componen
   templateUrl: './vehicule.component.html'
 })
 export class AppVehiculeComponent {
-  displayedColumns: string[] = ['id', 'name', 'matricule','actif', 'actions'];
+  displayedColumns: string[] = ['id', 'name', 'matricule','horsepower','actif', 'actions'];
   data: Vehicule[] = [];
   dataSource = new MatTableDataSource<Vehicule>();
 
@@ -56,57 +56,77 @@ export class AppVehiculeComponent {
   }
 
   Load(): void {
-    this.data = this.service.Get();
-    this.dataSource.data = this.data;
+    this.service.Get().subscribe(data => {
+      this.data = data;  // Assigner les données récupérées à la variable 'data'
+      this.dataSource.data = this.data;  // Mettre à jour la source de données pour l'affichage
+      console.log('Véhicules récupérés :', data);  // Affichage des données dans la console
+    })
   }
 
   add(): void {
-    const dialogRef = this.dialog.open(Add, {
+    const dialogRef = this.dialog.open(AddVehiculeDialogComponent, {
       width: '400px',
-      data: { data: { id: 0, name: '', matricule: ''} }
+      data: { 
+        data: {
+          id: 0,
+          name: '',
+          licensePlateNumber: '',
+          horsepower: 0,
+          actif: true,
+        } as Vehicule
+      }
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.service.Add(result);
-        this.Load();
+        console.log(result);
+        this.service.Add(result).subscribe({
+          next: () => this.Load(),
+          error: (err) => console.error('Erreur ajout :', err)
+        });
       }
     });
   }
-  // Méthode pour ouvrir le dialog d'édition
-  edit(data: Vehicule): void {
-    const dialogRef = this.dialog.open(Edit, {
-      width: '400px',
-      data: { data: { ...data } }
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.service.Update(result);  // Mettre à jour l'employé
-        this.Load();  // Recharger la liste après modification
-      }
-    });
-  }
-    // Méthode pour afficher la confirmation avant suppression
-  delete(id: number): void {
-    const dialogRef = this.dialog.open(Delete, {
-      width: '400px',
-      data: { data: { id: id } }
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.service.Delete(id);
-        this.Load();
-      }
-    });
-  }
-
-  onActifChange(data: Vehicule): void {
-    this.service.Update(data);
-  }
-
-  applyFilter(event: Event): void {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
+   // Méthode pour ouvrir le dialog d'édition
+   edit(data: Vehicule): void {
+     const dialogRef = this.dialog.open(Edit, {
+       width: '400px',
+       data: { data: { ...data } }
+     });
+   
+     dialogRef.afterClosed().subscribe((result) => {
+       if (result) {
+         this.service.Update(result).subscribe({
+           next: () => this.Load(),
+           error: (err) => console.error('Erreur modification :', err)
+         });
+       }
+     });
+   }
+     // Méthode pour afficher la confirmation avant suppression
+     delete(id: number): void {
+       const dialogRef = this.dialog.open(Delete, {
+         width: '400px',
+         data: { data: { id: id } }
+       });
+     
+       dialogRef.afterClosed().subscribe((result) => {
+         if (result) {
+           this.service.Delete(id).subscribe({
+             next: () => this.Load(),
+             error: (err) => console.error('Erreur suppression :', err)
+           });
+         }
+       });
+     }
+   onActifChange(data: Vehicule): void {
+     this.service.Update(data).subscribe({
+       next: () => console.log('Actif changé avec succès.'),
+       error: (err) => console.error('Erreur changement actif :', err)
+     });
+   }
+   applyFilter(event: Event): void {
+     const filterValue = (event.target as HTMLInputElement).value;
+     this.dataSource.filter = filterValue.trim().toLowerCase();
+   }
 }

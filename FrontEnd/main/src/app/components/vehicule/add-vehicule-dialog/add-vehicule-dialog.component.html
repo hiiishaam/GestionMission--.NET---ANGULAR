@@ -1,4 +1,4 @@
-<h2 mat-dialog-title>Ajouter un employé</h2>
+<h2 mat-dialog-title>Ajouter Vehicule</h2>
 <br/>
 <mat-dialog-content>
   <mat-form-field appearance="outline" class="full-width">
@@ -8,11 +8,23 @@
 
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>matricule</mat-label>
-    <input matInput [(ngModel)]="data.data.matricule">
+    <input matInput [(ngModel)]="data.data.licensePlateNumber">
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Puissance</mat-label>
+    <input matInput [(ngModel)]="data.data.horsepower">
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Actif</mat-label>
+    <mat-select [(ngModel)]="data.data.actif" name="actif">
+      <mat-option [value]="true">Oui</mat-option>
+      <mat-option [value]="false">Non</mat-option>
+    </mat-select>
   </mat-form-field>
 </mat-dialog-content>
 
+
 <mat-dialog-actions >
   <button mat-button (click)="onCancel()">Annuler</button>
-  <button mat-raised-button color="primary" (click)="Add()">Ajouter</button>
+  <button mat-raised-button color="primary" (click)="save()">Ajouter</button>
 </mat-dialog-actions>

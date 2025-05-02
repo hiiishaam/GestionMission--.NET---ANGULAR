@@ -15,6 +15,8 @@ namespace GestionMission.Services
 
         public Team Add(Team team)
         {
+            team.CreateDate = DateTime.UtcNow;
+            team.UpdateDate = DateTime.UtcNow;
             _db.teams.Add(team);
             _db.SaveChanges();
             return team;
@@ -43,7 +45,7 @@ namespace GestionMission.Services
 
         public List<Team> FindByEmployerId(int employerId)
         {
-            return _db.teams.Where(t => t.EmployerId == employerId).ToList();
+            return _db.teams.Where(t => t.EmployeeId == employerId).ToList();
         }
 
         public Team Update(Team team, int id)
@@ -51,7 +53,7 @@ namespace GestionMission.Services
             var existingTeam = _db.teams.Find(id);
             if (existingTeam != null)
             {
-                existingTeam.EmployerId = team.EmployerId;
+                existingTeam.EmployeeId = team.EmployeeId;
                 existingTeam.MissionId = team.MissionId;
                 _db.SaveChanges();
             }

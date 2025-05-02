@@ -1,16 +1,19 @@
 import { Routes } from '@angular/router';
 import { BlankComponent } from './layouts/blank/blank.component';
 import { FullComponent } from './layouts/full/full.component';
+import { AuthGuard } from './pages/authentication/auth.guard';
 
 export const routes: Routes = [
   {
     path: '',
     component: FullComponent,
+    canActivateChild: [AuthGuard],
     children: [
       {
         path: '',
         redirectTo: '/dashboard',
         pathMatch: 'full',
+     
       },
       {
         path: 'dashboard',

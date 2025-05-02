@@ -17,7 +17,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card'; 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
-import { Add } from './add-fonction-dialog/add-fonction-dialog.component';
+import { AddAffectationDialogComponent } from './add-fonction-dialog/add-fonction-dialog.component';
 import { Edit } from './edit-fonction-dialog/edit-fonction-dialog.component';
 import { Delete } from './delete-fonction-dialog/delete-fonction-dialog.component';
 
@@ -51,57 +51,80 @@ export class AppFonctionComponent {
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
   }
 
   Load(): void {
-    this.data = this.service.Get();
-    this.dataSource.data = this.data;
+    this.service.Get().subscribe(data => {
+      this.data = data; // Assigner les données récupérées à la variable 'data'
+      this.dataSource.data = this.data; // Mettre à jour la source de données pour l'affichage
+      console.log('fonctions récupérées :', data); // Affichage des données dans la console
+    });
   }
 
   add(): void {
-    const dialogRef = this.dialog.open(Add, {
+    const dialogRef = this.dialog.open(AddAffectationDialogComponent , {
       width: '400px',
-      data: { data: { id: 0, name: '', position: '', salary: 0 } }
+      data: {
+        data: {
+          id: 0,
+          name: '',
+          actif: true,
+        } as Fonction
+      }
     });
-
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.service.Add(result);
-        this.Load();
+        console.log(result);
+        this.service.Add(result).subscribe({
+          next: () => this.Load(),
+          error: (err) => console.error('Erreur ajout :', err)
+        });
       }
     });
   }
+
+  
   // Méthode pour ouvrir le dialog d'édition
   edit(data: Fonction): void {
     const dialogRef = this.dialog.open(Edit, {
       width: '400px',
       data: { data: { ...data } }
     });
-
+  
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.service.Update(result);  
-        this.Load();  
+        this.service.Update(result).subscribe({
+          next: () => this.Load(),
+          error: (err) => console.error('Erreur modification :', err)
+        });
       }
     });
   }
     // Méthode pour afficher la confirmation avant suppression
-  delete(id: number): void {
-    const dialogRef = this.dialog.open(Delete, {
-      width: '400px',
-      data: { data: { id: id } }
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.service.Delete(id);
-        this.Load();
-      }
+    delete(id: number): void {
+      const dialogRef = this.dialog.open(Delete, {
+        width: '400px',
+        data: { data: { id: id } }
+      });
+    
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          this.service.Delete(id).subscribe({
+            next: () => this.Load(),
+            error: (err) => console.error('Erreur suppression :', err)
+          });
+        }
+      });
+    }
+  onActifChange(data: Fonction): void {
+    this.service.Update(data).subscribe({
+      next: () => console.log('Actif changé avec succès.'),
+      error: (err) => console.error('Erreur changement actif :', err)
     });
   }
-  onActifChange(data: Fonction): void {
-      this.service.Update(data);
-    }
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();

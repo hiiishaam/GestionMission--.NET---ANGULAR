@@ -10,7 +10,7 @@ import { FormsModule } from '@angular/forms';
     AppEmployeeComponent,
     FormsModule
   ],
-  templateUrl: './employee.component.html',
+  templateUrl: './paiement.component.html',
   encapsulation: ViewEncapsulation.None,
 })
 export class EmployeeComponent { }

@@ -17,7 +17,7 @@ namespace GestionMission.Services
             _db = db;
         }
 
-        public Paiment Add(Paiment paiment)
+        public Payment Add(Payment paiment)
         {
             try
             {
@@ -26,7 +26,7 @@ namespace GestionMission.Services
                     throw new ArgumentNullException(nameof(paiment), "Paiment cannot be null.");
                 }
 
-                _db.paiments.Add(paiment);
+                _db.payments.Add(paiment);
                 _db.SaveChanges();
                 return paiment;
             }
@@ -47,17 +47,17 @@ namespace GestionMission.Services
             }
         }
 
-        public Paiment Delete(int id)
+        public Payment Delete(int id)
         {
             try
             {
-                var paiment = _db.paiments.Find(id);
+                var paiment = _db.payments.Find(id);
                 if (paiment == null)
                 {
                     throw new Exception("Paiment not found.");
                 }
 
-                _db.paiments.Remove(paiment);
+                _db.payments.Remove(paiment);
                 _db.SaveChanges();
                 return paiment;
             }
@@ -67,11 +67,11 @@ namespace GestionMission.Services
             }
         }
 
-        public List<Paiment> FindAll()
+        public List<Payment> FindAll()
         {
             try
             {
-                return _db.paiments.ToList();
+                return _db.payments.ToList();
             }
             catch (Exception ex)
             {
@@ -79,11 +79,11 @@ namespace GestionMission.Services
             }
         }
 
-        public Paiment FindById(int id)
+        public Payment FindById(int id)
         {
             try
             {
-                var paiment = _db.paiments.Find(id);
+                var paiment = _db.payments.Find(id);
                 if (paiment == null)
                 {
                     throw new Exception("Paiment not found.");
@@ -97,11 +97,11 @@ namespace GestionMission.Services
             }
         }
 
-        public Paiment Update(Paiment paiment, int id)
+        public Payment Update(Payment paiment, int id)
         {
             try
             {
-                var existingPaiment = _db.paiments.Find(id);
+                var existingPaiment = _db.payments.Find(id);
                 if (existingPaiment == null)
                 {
                     throw new Exception("Paiment not found.");

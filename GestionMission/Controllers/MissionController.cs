@@ -1,6 +1,8 @@
 ﻿using GestionMission.Entities;
 using GestionMission.Interfaces;
+using GestionMission.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 
@@ -66,25 +68,38 @@ namespace GestionMission.Controllers
                 return StatusCode(500, "Une erreur interne est survenue. Veuillez réessayer plus tard.");
             }
         }
-
         [HttpPost]
-        public ActionResult<Mission> Create([FromBody] Mission mission)
+        public async Task<ActionResult<Mission>> Create([FromBody] MissionDto dto)
         {
             try
             {
-                if (mission == null)
+                if (dto == null)
                     return BadRequest("Mission invalide");
+                // Création de l’objet Mission à partir du DTO
+                var mission = new Mission
+                {
+                    Raison = dto.Description,
+
+                    DateDebut = dto.DateDebut,
+                    DateFin = dto.DateFin,
+                    EmployerId = dto.EmployeId,
+                    VehiculeId = dto.VehiculeId,
+                    StatutId = dto.StatutId,
+                    UpdatedById = dto.UpdatedById,
+                    CreatedById = dto.CreatedById,
+                    VilleArrive = string.Empty,
+                    VilleDepart = string.Empty
+                };
 
                 var createdMission = _service.Add(mission);
                 return CreatedAtAction(nameof(GetById), new { id = createdMission.Id }, createdMission);
             }
             catch (Exception ex)
             {
-                // Log the exception (optional)
-                // _logger.LogError(ex, "An error occurred while creating the mission.");
                 return StatusCode(500, "Une erreur interne est survenue. Veuillez réessayer plus tard.");
             }
         }
+
 
         [HttpPut("{id}")]
         public ActionResult<Mission> Update(int id, [FromBody] Mission mission)

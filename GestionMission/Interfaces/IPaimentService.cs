@@ -4,10 +4,10 @@ namespace GestionMission.Interfaces
 {
     public interface IPaimentService
     {
-        List<Paiment> FindAll();
-        Paiment FindById(int id);
-        Paiment Add(Paiment paiment);
-        Paiment Update(Paiment paiment, int id);
-        Paiment Delete(int id);
+        List<Payment> FindAll();
+        Payment FindById(int id);
+        Payment Add(Payment paiment);
+        Payment Update(Payment paiment, int id);
+        Payment Delete(int id);
     }
 }

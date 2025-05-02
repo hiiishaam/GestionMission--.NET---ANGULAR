@@ -16,22 +16,19 @@ namespace GestionMission.Entities
         public string VilleArrive { get; set; }
         public Double? Distance { get; set; }
         [Required]
-        public DateTime DateDebut { get; set; }
+        public DateTime? DateDebut { get; set; }
         [Required]
-        public DateTime DateFin { get; set; }
+        public DateTime? DateFin { get; set; }
         public int EmployerId { get; set; }
-        public Employer Employer { get; set; }
-
-
+        public Employee? Employer { get; set; }
         public int? VehiculeId { get; set; }
         public Vehicule? Vehicule { get; set; }
-
-        public int StatutId { get; set; }
-        public Statut Statut { get; set; }
-
-
-
-
+        public int? StatutId { get; set; }
+        public Statut? Statut { get; set; }
+        public int? CreatedById { get; set; }
+        public User? CreatedBy { get; set; }
+        public int? UpdatedById { get; set; }
+        public User? UpdatedBy { get; set; }
 
     }
 }

@@ -8,13 +8,22 @@ namespace GestionMission.Entities
         public int Id { get; set; }
         [Required]
         [StringLength(50)]
-        public string Raison { get; set; }
+        public required string Reason { get; set; }
         [Required]
-        public DateTime DateDebut { get; set; }
+        public DateTime StartDate { get; set; }
         [Required]
-        public DateTime DateFin { get; set; }
-        public int EmployerId { get; set; }
-        public Employer Employer { get; set; }
-
+        public DateTime EndDate { get; set; }
+        public int EmployeeId { get; set; }
+        public required Employee Employee { get; set; }
+        [Required]
+        public bool Actif { get; set; }
+        [Required]
+        public DateTime UpdateDate { get; set; }
+        [Required]
+        public DateTime CreateDate { get; set; }
+        public int CreatedById { get; set; }
+        public required User CreatedBy { get; set; }
+        public int UpdatedById { get; set; }
+        public required User UpdatedBy { get; set; }
     }
 }

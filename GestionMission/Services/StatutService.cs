@@ -16,6 +16,8 @@ namespace GestionMission.Services
 
         public Statut Add(Statut statut)
         {
+            statut.CreateDate = DateTime.UtcNow;
+            statut.UpdateDate = DateTime.UtcNow;
             _db.statuts.Add(statut);
             _db.SaveChanges();
             return statut;
@@ -44,7 +46,7 @@ namespace GestionMission.Services
 
         public List<Statut> FindByNom(string nom)
         {
-            return _db.statuts.Where(e => e.Nom.Contains(nom)).ToList();
+            return _db.statuts.Where(e => e.Name.Contains(nom)).ToList();
         }
 
         public Statut Update(Statut statut, int id)
@@ -52,7 +54,7 @@ namespace GestionMission.Services
             var existingStatut = _db.statuts.Find(id);
             if (existingStatut != null)
             {
-                existingStatut.Nom = statut.Nom;
+                existingStatut.Name = statut.Name;
                 existingStatut.Actif = statut.Actif;
                 _db.SaveChanges();
             }

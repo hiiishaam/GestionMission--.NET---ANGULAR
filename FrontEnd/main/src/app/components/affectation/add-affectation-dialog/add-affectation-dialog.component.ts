@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSelectModule } from '@angular/material/select';
 
 @Component({
   selector: 'app-add-affectation-dialog',
@@ -16,19 +17,20 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatDialogModule 
+    MatDialogModule ,
+    MatSelectModule
   ],
   templateUrl: './add-affectation-dialog.component.html'
 })
-export class Add {
+export class AddAffectationDialogComponent  {
   constructor(
-    public dialogRef: MatDialogRef<Add>,
+    public dialogRef: MatDialogRef<AddAffectationDialogComponent >,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
-
-  Add(): void {
+  save(): void {
     this.dialogRef.close(this.data.data);
   }
+  
 
   onCancel(): void {
     this.dialogRef.close();

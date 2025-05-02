@@ -17,7 +17,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card'; 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
-import { Add } from './add-affectation-dialog/add-affectation-dialog.component';
+import { AddAffectationDialogComponent  } from './add-affectation-dialog/add-affectation-dialog.component';
 import { Edit } from './edit-affectation-dialog/edit-affectation-dialog.component';
 import { Delete } from './delete-affectation-dialog/delete-affectation-dialog.component';
 
@@ -51,57 +51,80 @@ export class AppAffectationComponent {
   }
 
   ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
   }
 
   Load(): void {
-    this.data = this.service.Get();
-    this.dataSource.data = this.data;
+    this.service.Get().subscribe(data => {
+      this.data = data; // Assigner les données récupérées à la variable 'data'
+      this.dataSource.data = this.data; // Mettre à jour la source de données pour l'affichage
+      console.log('Affectations récupérées :', data); // Affichage des données dans la console
+    });
   }
 
   add(): void {
-    const dialogRef = this.dialog.open(Add, {
+    const dialogRef = this.dialog.open(AddAffectationDialogComponent , {
       width: '400px',
-      data: { data: { id: 0, name: '', position: '', salary: 0 } }
+      data: {
+        data: {
+          id: 0,
+          name: '',
+          actif: true,
+        } as Affectation
+      }
     });
-
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.service.Add(result);
-        this.Load();
+        console.log(result);
+        this.service.Add(result).subscribe({
+          next: () => this.Load(),
+          error: (err) => console.error('Erreur ajout :', err)
+        });
       }
     });
   }
+
+  
   // Méthode pour ouvrir le dialog d'édition
   edit(data: Affectation): void {
     const dialogRef = this.dialog.open(Edit, {
       width: '400px',
       data: { data: { ...data } }
     });
-
+  
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.service.Update(result);  // Mettre à jour l'employé
-        this.Load();  // Recharger la liste après modification
+        this.service.Update(result).subscribe({
+          next: () => this.Load(),
+          error: (err) => console.error('Erreur modification :', err)
+        });
       }
     });
   }
     // Méthode pour afficher la confirmation avant suppression
-  delete(id: number): void {
-    const dialogRef = this.dialog.open(Delete, {
-      width: '400px',
-      data: { data: { id: id } }
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.service.Delete(id);
-        this.Load();
-      }
+    delete(id: number): void {
+      const dialogRef = this.dialog.open(Delete, {
+        width: '400px',
+        data: { data: { id: id } }
+      });
+    
+      dialogRef.afterClosed().subscribe((result) => {
+        if (result) {
+          this.service.Delete(id).subscribe({
+            next: () => this.Load(),
+            error: (err) => console.error('Erreur suppression :', err)
+          });
+        }
+      });
+    }
+  onActifChange(data: Affectation): void {
+    this.service.Update(data).subscribe({
+      next: () => this.Load(),
+      error: (err) => console.error('Erreur changement actif :', err)
     });
   }
-  onActifChange(data: Affectation): void {
-      this.service.Update(data);
-    }
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();

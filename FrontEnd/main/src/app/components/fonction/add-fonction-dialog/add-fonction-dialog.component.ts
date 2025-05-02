@@ -20,9 +20,9 @@ import { MatDialogModule } from '@angular/material/dialog';
   ],
   templateUrl: './add-fonction-dialog.component.html'
 })
-export class Add {
+export class AddAffectationDialogComponent {
   constructor(
-    public dialogRef: MatDialogRef<Add>,
+    public dialogRef: MatDialogRef<AddAffectationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 

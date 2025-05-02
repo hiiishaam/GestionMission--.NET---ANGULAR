@@ -20,7 +20,7 @@ namespace GestionMission.Controllers
 
         // GET: api/paiment
         [HttpGet]
-        public ActionResult<List<Paiment>> GetAll()
+        public ActionResult<List<Payment>> GetAll()
         {
             try
             {
@@ -35,7 +35,7 @@ namespace GestionMission.Controllers
 
         // GET: api/paiment/5
         [HttpGet("{id}")]
-        public ActionResult<Paiment> GetById(int id)
+        public ActionResult<Payment> GetById(int id)
         {
             try
             {
@@ -54,7 +54,7 @@ namespace GestionMission.Controllers
 
         // POST: api/paiment
         [HttpPost]
-        public ActionResult<Paiment> Add([FromBody] Paiment paiment)
+        public ActionResult<Payment> Add([FromBody] Payment paiment)
         {
             try
             {
@@ -74,7 +74,7 @@ namespace GestionMission.Controllers
 
         // PUT: api/paiment/5
         [HttpPut("{id}")]
-        public ActionResult<Paiment> Update(int id, [FromBody] Paiment paiment)
+        public ActionResult<Payment> Update(int id, [FromBody] Payment paiment)
         {
             try
             {
@@ -98,7 +98,7 @@ namespace GestionMission.Controllers
 
         // DELETE: api/paiment/5
         [HttpDelete("{id}")]
-        public ActionResult<Paiment> Delete(int id)
+        public ActionResult<Payment> Delete(int id)
         {
             try
             {

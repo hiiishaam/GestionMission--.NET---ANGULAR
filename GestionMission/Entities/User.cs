@@ -1,14 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
-
 namespace GestionMission.Entities
 {
-    public class Statut
+    public class User
     {
         [Key]
         public int Id { get; set; }
         [Required]
-        [StringLength(50)]
-        public required string Name { get; set; }
+        [StringLength(500)]
+        public required string FullName { get; set; }
+        [Required]
+        [StringLength(500)]
+        public required string Password { get; set; }
+        [Required]
+        [StringLength(500)]
+        public required string Email { get; set; }
         [Required]
         public bool Actif { get; set; }
         [Required]

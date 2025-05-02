@@ -19,6 +19,7 @@ import { MatCardModule } from '@angular/material/card';
 import { Add } from './add-mission-dialog/add-mission-dialog.component';
 import { Edit } from './edit-mission-dialog/edit-mission-dialog.component';
 import { Delete } from './delete-mission-dialog/delete-mission-dialog.component';
+import { View } from './view-mission-dialog/view-mission-dialog.component';
 
 @Component({
   selector: 'app-mission',
@@ -38,7 +39,7 @@ import { Delete } from './delete-mission-dialog/delete-mission-dialog.component'
   templateUrl: './mission.component.html'
 })
 export class AppMissionComponent {
-  displayedColumns: string[] = ['id', 'name', 'description', 'actions'];
+  displayedColumns: string[] = ['id', 'description', 'depart', 'destination', 'dateDepart', 'dateRetour', 'actions'];
   data: Mission[] = [];
   dataSource = new MatTableDataSource<Mission>();
 
@@ -53,27 +54,37 @@ export class AppMissionComponent {
   }
 
   Load(): void {
-    this.data = this.service.Get();
-    this.dataSource.data = this.data;
+    this.service.Get().subscribe(data => {
+      this.data = data;  // Assigner les données récupérées à la variable 'data'
+      this.dataSource.data = this.data;  // Mettre à jour la source de données pour l'affichage
+      console.log('Missions récupérées :', data);  // Affichage des données dans la console
+    });
   }
-
   add(): void {
     const dialogRef = this.dialog.open(Add, {
-      width: '2000px',
-      data: { data: { id: 0, name: '' } }
-    });
-
+    width: '90vw',
+    height: '80vh',
+    maxHeight: '100vh',
+    panelClass: 'full-screen-dialog',
+        data: { data: { id: 0, name: '', statutId : 1  } }
+      });
     dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.service.Add(result);
-        this.Load();
-      }
-    });
-  }
+        if (result) {
+          console.log(result);
+          this.service.Add(result).subscribe({
+            next: () => this.Load(),
+            error: (err) => console.error('Erreur ajout :', err)
+          });
+        }
+      });
+    }
+  
   // Méthode pour ouvrir le dialog d'édition
   edit(data: Mission): void {
     const dialogRef = this.dialog.open(Edit, {
-      width: '400px',
+      width: '90vw',
+      height: '80vh',
+      maxHeight: '100vh',
       data: { data: { ...data } }
     });
 
@@ -97,7 +108,18 @@ export class AppMissionComponent {
       }
     });
   }
-
+  view(mission: Mission) {
+    // Exemple : ouvrir une boîte de dialogue ou router vers une page de détails
+    this.dialog.open(View, {
+      width: '90vw',
+      height: '80vh',
+      maxHeight: '100vh',
+      data: mission
+    });
+  
+    // OU rediriger vers une page dédiée
+    // this.router.navigate(['/missions', mission.id]);
+  }
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();

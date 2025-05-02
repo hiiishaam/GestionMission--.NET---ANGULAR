@@ -15,6 +15,8 @@ namespace GestionMission.Services
 
         public Fonction Add(Fonction fonction)
         {
+            fonction.CreateDate = DateTime.UtcNow;
+            fonction.UpdateDate = DateTime.UtcNow;
             _db.fonctions.Add(fonction);
             _db.SaveChanges();
             return fonction;
@@ -44,7 +46,7 @@ namespace GestionMission.Services
 
         public List<Fonction> FindByNom(string nom)
         {
-            return _db.fonctions.Where(e => e.Nom.Contains(nom)).ToList();
+            return _db.fonctions.Where(e => e.Name.Contains(nom)).ToList();
         }
 
         public Fonction Update(Fonction fonction, int id)
@@ -52,7 +54,10 @@ namespace GestionMission.Services
             var existingfonction = _db.fonctions.Find(id);
             if (existingfonction != null)
             {
-                existingfonction.Nom = fonction.Nom;
+                existingfonction.Name = fonction.Name;
+                existingfonction.Actif = fonction.Actif;
+                existingfonction.UpdatedById = fonction.UpdatedById;
+                existingfonction.UpdateDate = DateTime.UtcNow;
                 _db.SaveChanges();
             }
             return existingfonction;

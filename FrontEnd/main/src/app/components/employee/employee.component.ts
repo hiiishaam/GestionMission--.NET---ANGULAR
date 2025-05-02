@@ -17,7 +17,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card'; 
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
-import { Add } from './add-employee-dialog/add-employee-dialog.component';
+import { AddEmployee } from './add-employee-dialog/add-employee-dialog.component';
 import { Edit } from './edit-employee-dialog/edit-employee-dialog.component';
 import { Delete } from './delete-employee-dialog/delete-employee-dialog.component';
 
@@ -57,25 +57,45 @@ export class AppEmployeeComponent {
   }
 
   Load(): void {
-    this.data = this.service.Get();
-    this.fonctions = this.serviceFonction.Get();
-    this.affectations = this.serviceAffectation.Get();
-    this.dataSource.data = this.data;
+    this.service.Get().subscribe(data => {
+      this.data = data;
+      this.dataSource.data = this.data;
+      console.log('Employés récupérés :', data);
+    });
+       // Récupérer les fonctions via le service FonctionService
+    this.serviceFonction.Get().subscribe(data => {
+      this.fonctions = data; // Assigner les fonctions récupérées à la variable 'fonctions'
+      console.log('Fonctions récupérées :', data); // Affichage dans la console
+    });
+
+    this.serviceAffectation.Get().subscribe(data => {
+      this.affectations = data; // Assigner les affectations récupérées à la variable 'affectations'
+      console.log('Affectations récupérées :', data); // Affichage dans la console
+    });
   }
 
   add(): void {
-    const dialogRef = this.dialog.open(Add, {
+    const dialogRef = this.dialog.open(AddEmployee, {
       width: '400px',
-      data: { data: { id: 0, name: '', prenom: '', affectationId: 0, fonctionId:0 }, 
+      data: { data: 
+                {
+                  id: 0,
+                  firstName: '',
+                  lastName: '',
+                  
+                  actif: true,  
+                } as Employee, 
               fonctions: this.fonctions, 
               affectations : this.affectations 
             }
     });
-
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        this.service.Add(result);
-        this.Load();
+        console.log(result);
+        this.service.Add(result).subscribe({
+          next: () => this.Load(),
+          error: (err) => console.error('Erreur ajout :', err)
+        });
       }
     });
   }
@@ -90,26 +110,56 @@ export class AppEmployeeComponent {
             }
     });
 
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.service.Update(result);  // Mettre à jour l'employé
-        this.Load();  // Recharger la liste après modification
-      }
-    });
-  }
+  //   dialogRef.afterClosed().subscribe((result) => {
+  //     if (result) {
+  //       this.service.Update(result);  // Mettre à jour l'employé
+  //       this.Load();  // Recharger la liste après modification
+  //     }
+  //   });
+  // }
+  dialogRef.afterClosed().subscribe((result) => {
+    if (result) {
+      this.service.Update(result).subscribe({
+        next: () => this.Load(),
+        error: (err) => console.error('Erreur edit :', err)
+      });
+    }
+  });
+}
     // Méthode pour afficher la confirmation avant suppression
-  delete(id: number): void {
-    const dialogRef = this.dialog.open(Delete, {
-      width: '400px',
-      data: { data: { id: id } }
-    });
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.service.Delete(id);
-        this.Load();
-      }
-    });
-  }
+    // Méthode pour afficher la confirmation avant suppression
+delete(id: number): void {
+  const dialogRef = this.dialog.open(Delete, {
+    width: '400px',
+    data: { 
+      id: id, // Envoi de l'id à la boîte de dialogue pour confirmation
+      fonctions: this.fonctions, 
+      affectations: this.affectations
+    }
+  });
+
+  dialogRef.afterClosed().subscribe((result) => {
+    if (result) {
+      this.service.Delete(id).subscribe({
+        next: () => this.Load(),  // Recharger la liste après suppression
+        error: (err) => console.error('Erreur suppression :', err)
+      });
+    }
+  });
+}
+
+  // delete(id: number): void {
+  //   const dialogRef = this.dialog.open(Delete, {
+  //     width: '400px',
+  //     data: { data: { id: id } }
+  //   });
+  //   dialogRef.afterClosed().subscribe((result) => {
+  //     if (result) {
+  //       this.service.Delete(id);
+  //       this.Load();
+  //     }
+  //   });
+  // }
 
   getFonctionLibelle(fonctionId: number | null | undefined): string {
   if (!fonctionId) {
@@ -127,7 +177,10 @@ export class AppEmployeeComponent {
     return affectation ? affectation.name : 'Non défini';
   }
   onActifChange(data: Employee): void {
-    this.service.Update(data);
+    this.service.Update(data).subscribe({
+      next: () => this.Load(),
+      error: (err) => console.error('Erreur changement actif :', err)
+    });
   }
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;

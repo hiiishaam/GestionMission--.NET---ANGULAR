@@ -9,14 +9,14 @@
           <input matInput (keyup)="applyFilter($event)">
         </mat-form-field>
   
-        <!-- Bouton Ajouter un employé à droite -->
-        <button mat-flat-button color="primary" (click)="add()">Ajouter un employé</button>
+        <!-- Bouton Ajouter un véhicule à droite -->
+        <button mat-flat-button color="primary" (click)="add()">Ajouter un véhicule</button>
       </div>
     </mat-card-content>
   </mat-card>
   
 
-  <!-- Table des employés -->
+  <!-- Table des véhicules -->
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
     <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef> # </th>
@@ -30,7 +30,12 @@
 
     <ng-container matColumnDef="matricule">
       <th mat-header-cell *matHeaderCellDef> Matricule </th>
-      <td mat-cell *matCellDef="let data"> {{ data.matricule }} </td>
+      <td mat-cell *matCellDef="let data"> {{ data.licensePlateNumber }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="horsepower">
+      <th mat-header-cell *matHeaderCellDef> Puissance </th>
+      <td mat-cell *matCellDef="let data"> {{ data.horsepower }} </td>
     </ng-container>
 
     <ng-container matColumnDef="actif">

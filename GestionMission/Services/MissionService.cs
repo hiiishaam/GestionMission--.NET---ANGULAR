@@ -17,6 +17,68 @@ namespace GestionMission.Services
             _db = db;
         }
 
+        //public Mission Add(Mission mission)
+        //{
+        //    if (mission == null)
+        //        throw new ArgumentNullException(nameof(mission), "La mission ne peut pas être nulle.");
+
+        //    try
+        //    {
+        //        // Vérifier et attacher l'Employer
+        //        var employer = _db.employees.Find(mission.EmployerId);
+        //        if (employer != null)
+        //        {
+        //            mission.Employer = employer;
+        //        }
+        //        else
+        //        {
+        //            throw new ArgumentException("L'employé spécifié n'existe pas.", nameof(mission.EmployerId));
+        //        }
+
+        //        // Vérifier et attacher le Véhicule (facultatif)
+        //        if (mission.VehiculeId.HasValue)
+        //        {
+        //            var vehicule = _db.vehicules.Find(mission.VehiculeId);
+        //            if (vehicule != null)
+        //            {
+        //                mission.Vehicule = vehicule;
+        //            }
+        //            else
+        //            {
+        //                throw new ArgumentException("Le véhicule spécifié n'existe pas.", nameof(mission.VehiculeId));
+        //            }
+        //        }
+
+        //        // Vérifier et attacher le Statut
+        //        var statut = _db.statuts.Find(mission.StatutId);
+        //        if (statut != null)
+        //        {
+        //            mission.Statut = statut;
+        //        }
+        //        else
+        //        {
+        //            throw new ArgumentException("Le statut spécifié n'existe pas.", nameof(mission.StatutId));
+        //        }
+
+        //        // Ajouter la mission à la base de données
+        //        _db.missions.Add(mission);
+        //        _db.SaveChanges();
+
+        //        return mission;
+        //    }
+        //    catch (ArgumentException ex)
+        //    {
+        //        // Gérer les erreurs spécifiques liées à des paramètres incorrects
+        //        // Vous pouvez loguer l'erreur ici si nécessaire
+        //        throw new InvalidOperationException("Une erreur est survenue lors de l'ajout de la mission.", ex);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Gérer les erreurs générales
+        //        // Vous pouvez loguer l'erreur ici si nécessaire
+        //        throw new InvalidOperationException("Une erreur inattendue est survenue lors de l'ajout de la mission.", ex);
+        //    }
+        //}
         public Mission Add(Mission mission)
         {
             if (mission == null)
@@ -24,8 +86,12 @@ namespace GestionMission.Services
 
             try
             {
+                // Validation de la date
+                if (mission.DateDebut >= mission.DateFin)
+                    throw new ArgumentException("La date de fin doit être après la date de début.");
+
                 // Vérifier et attacher l'Employer
-                var employer = _db.employers.Find(mission.EmployerId);
+                var employer = _db.employees.Find(mission.EmployerId);
                 if (employer != null)
                 {
                     mission.Employer = employer;
@@ -60,6 +126,34 @@ namespace GestionMission.Services
                     throw new ArgumentException("Le statut spécifié n'existe pas.", nameof(mission.StatutId));
                 }
 
+                // Vérifier et attacher le CreatedBy (facultatif)
+                if (mission.CreatedById.HasValue)
+                {
+                    var createdBy = _db.users.Find(mission.CreatedById);
+                    if (createdBy != null)
+                    {
+                        mission.CreatedBy = createdBy;
+                    }
+                    else
+                    {
+                        throw new ArgumentException("L'utilisateur (CreatedBy) spécifié n'existe pas.", nameof(mission.CreatedById));
+                    }
+                }
+
+                // Vérifier et attacher le UpdatedBy (facultatif)
+                if (mission.UpdatedById.HasValue)
+                {
+                    var updatedBy = _db.users.Find(mission.UpdatedById);
+                    if (updatedBy != null)
+                    {
+                        mission.UpdatedBy = updatedBy;
+                    }
+                    else
+                    {
+                        throw new ArgumentException("L'utilisateur (UpdatedBy) spécifié n'existe pas.", nameof(mission.UpdatedById));
+                    }
+                }
+
                 // Ajouter la mission à la base de données
                 _db.missions.Add(mission);
                 _db.SaveChanges();
@@ -68,17 +162,16 @@ namespace GestionMission.Services
             }
             catch (ArgumentException ex)
             {
-                // Gérer les erreurs spécifiques liées à des paramètres incorrects
-                // Vous pouvez loguer l'erreur ici si nécessaire
-                throw new InvalidOperationException("Une erreur est survenue lors de l'ajout de la mission.", ex);
+                // Loguer l'erreur ici si nécessaire
+                throw new InvalidOperationException("Erreur de validation des paramètres de mission.", ex);
             }
             catch (Exception ex)
             {
-                // Gérer les erreurs générales
-                // Vous pouvez loguer l'erreur ici si nécessaire
+                // Loguer l'erreur générale ici
                 throw new InvalidOperationException("Une erreur inattendue est survenue lors de l'ajout de la mission.", ex);
             }
         }
+
 
 
         public Mission Delete(int id)
@@ -133,11 +226,14 @@ namespace GestionMission.Services
             existingMission.Distance = mission.Distance;
             existingMission.DateDebut = mission.DateDebut;
             existingMission.DateFin = mission.DateFin;
+            
+            //existingMission = mission.Actif;
+            existingMission.UpdatedById = mission.UpdatedById;
 
             // Mettre à jour les relations
             if (mission.EmployerId != existingMission.EmployerId)
             {
-                var employer = _db.employers.Find(mission.EmployerId);
+                var employer = _db.employees.Find(mission.EmployerId);
                 if (employer != null)
                 {
                     existingMission.Employer = employer;

@@ -4,19 +4,19 @@
   <!-- Champ Nom -->
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>Nom</mat-label>
-    <input matInput [(ngModel)]="data.data.name">
+    <input matInput [(ngModel)]="data.data.firstName"  name="firstName">
   </mat-form-field>
 
   <!-- Champ Prénom -->
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>Prénom</mat-label>
-    <input matInput [(ngModel)]="data.data.prenom">
+    <input matInput [(ngModel)]="data.data.lastName"  name="lastName">
   </mat-form-field>
 
   <!-- Sélection de la Fonction -->
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>Fonction</mat-label>
-    <mat-select [(ngModel)]="data.data.fonctionId">
+    <mat-select [(ngModel)]="data.data.fonctionId"  name="fonctionId">
       <mat-option *ngFor="let fonction of data.fonctions" [value]="fonction.id">
         {{ fonction.name }}
       </mat-option>
@@ -26,10 +26,17 @@
   <!-- Sélection de l'Affectation -->
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>Affectation</mat-label>
-    <mat-select [(ngModel)]="data.data.affectationId">
+    <mat-select [(ngModel)]="data.data.affectationId"  name="affectationId">
       <mat-option *ngFor="let affectation of data.affectations" [value]="affectation.id">
         {{ affectation.name }}
       </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Actif</mat-label>
+    <mat-select [(ngModel)]="data.data.actif" name="actif">
+      <mat-option [value]="true">Oui</mat-option>
+      <mat-option [value]="false">Non</mat-option>
     </mat-select>
   </mat-form-field>
 
@@ -37,5 +44,5 @@
 
 <mat-dialog-actions>
   <button mat-button (click)="onCancel()">Annuler</button>
-  <button mat-raised-button color="primary" (click)="Add()">Ajouter</button>
+  <button mat-raised-button color="primary" (click)="save()">Ajouter</button>
 </mat-dialog-actions>

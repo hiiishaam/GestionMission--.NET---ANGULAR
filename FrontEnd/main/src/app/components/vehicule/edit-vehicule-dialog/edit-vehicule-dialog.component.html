@@ -1,5 +1,5 @@
 <mat-dialog-content>
-  <h3>Éditer l'employé</h3>
+  <h3>Éditer vehicule</h3>
   <br/>
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>Nom</mat-label>
@@ -8,7 +8,12 @@
 
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>matricule</mat-label>
-    <input matInput [(ngModel)]="data.data.matricule" placeholder="Entrez le poste">
+    <input matInput [(ngModel)]="data.data.licensePlateNumber" placeholder="Entrez le matricule">
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Puissance</mat-label>
+    <input matInput [(ngModel)]="data.data.horsepower" placeholder="Entrez la puissance">
   </mat-form-field>
 
   <mat-dialog-actions>

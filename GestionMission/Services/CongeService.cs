@@ -2,9 +2,6 @@
 using GestionMission.Entities;
 using GestionMission.Interfaces;
 using Microsoft.AspNetCore.Http;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
 
 namespace GestionMission.Services
 {
@@ -23,16 +20,18 @@ namespace GestionMission.Services
                 throw new ArgumentNullException(nameof(conge));
 
             // Vérifier si l'employé associé existe
-            var employer = _db.employers.Find(conge.EmployerId);
+            var employer = _db.employees.Find(conge.EmployeeId);
             if (employer == null)
             {
-                throw new InvalidOperationException($"L'employé avec l'ID {conge.EmployerId} n'existe pas.");
+                throw new InvalidOperationException($"L'employé avec l'ID {conge.EmployeeId} n'existe pas.");
             }
 
             // Associer l'employé au congé
-            conge.Employer = employer;
+            conge.Employee = employer;
 
             // Ajouter le congé dans la base de données
+            conge.CreateDate = DateTime.UtcNow;
+            conge.UpdateDate = DateTime.UtcNow;
             _db.conges.Add(conge);
             _db.SaveChanges();
             return conge;
@@ -72,10 +71,11 @@ namespace GestionMission.Services
             var existingConge = _db.conges.Find(id);
             if (existingConge != null)
             {
-                existingConge.Raison = conge.Raison;
-                existingConge.DateDebut = conge.DateDebut;
-                existingConge.DateFin = conge.DateFin;
-                existingConge.EmployerId = conge.EmployerId;
+                existingConge.Reason = conge.Reason;
+                existingConge.StartDate = conge.StartDate;
+                existingConge.EndDate = conge.EndDate;
+                existingConge.EmployeeId = conge.EmployeeId;
+                existingConge.UpdateDate = DateTime.UtcNow;
 
                 _db.SaveChanges();
             }

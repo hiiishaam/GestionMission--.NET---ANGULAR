@@ -1,0 +1,74 @@
+<div class="container">
+  <mat-card class="mat-mdc-card mdc-card cardWithShadow">
+    <mat-card-content class="mat-mdc-card-content">
+      <h2 style="text-align: center;">Détails de la mission</h2>
+
+      <div class="mission-details">
+        <!-- ID de la mission -->
+        <div style="margin-bottom: 16px;">
+          <mat-label>ID de la mission</mat-label>
+          <p>{{ data.id }}</p>
+        </div>
+
+        <!-- Nom de la mission -->
+        <div style="margin-bottom: 16px;">
+          <mat-label>Nom de la mission</mat-label>
+          <p>{{ data.name }}</p>
+        </div>
+
+        <!-- Description -->
+        <div style="margin-bottom: 16px;">
+          <mat-label>Description</mat-label>
+          <p>{{ data.description }}</p>
+        </div>
+
+        <!-- Employé associé -->
+        <div style="margin-bottom: 16px;">
+          <mat-label>Employé</mat-label>
+          <p>{{ data.employeName }}</p>
+        </div>
+
+        <!-- Membres de l'équipe -->
+        <div style="margin-bottom: 16px;">
+          <mat-label>Membres de l'équipe</mat-label>
+          <p>{{ data.teamList }}</p>
+        </div>
+
+        <!-- Véhicule associé -->
+        <div style="margin-bottom: 16px;">
+          <mat-label>Véhicule</mat-label>
+          <p>{{ data.vehiculeName }}</p>
+        </div>
+
+        <!-- Statut -->
+        <div style="margin-bottom: 16px;">
+          <mat-label>ID du statut</mat-label>
+          <p>{{ data.statutId }}</p>
+        </div>
+
+        <!-- Destination -->
+        <div style="margin-bottom: 16px;">
+          <mat-label>Destination</mat-label>
+          <p>{{ data.destination }}</p>
+        </div>
+
+        <!-- Date de départ -->
+        <div style="margin-bottom: 16px;">
+          <mat-label>Date de départ</mat-label>
+          <p>{{ data.dateDepart | date:'shortDate' }}</p>
+        </div>
+
+        <!-- Date de retour -->
+        <div style="margin-bottom: 16px;">
+          <mat-label>Date de retour</mat-label>
+          <p>{{ data.dateRetour | date:'shortDate' }}</p>
+        </div>
+      </div>
+
+      <!-- Bouton de retour -->
+      <div style="text-align: right; margin-top: 20px;">
+        <button mat-raised-button color="accent" (click)="onCancel()">Retour</button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

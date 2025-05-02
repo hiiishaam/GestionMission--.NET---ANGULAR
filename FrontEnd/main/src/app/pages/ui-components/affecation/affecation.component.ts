@@ -10,7 +10,9 @@ import { FormsModule } from '@angular/forms';
     AppAffectationComponent,
     FormsModule
   ],
-  templateUrl: './affectation.component.html',
+  templateUrl: './affecation.component.html',
   encapsulation: ViewEncapsulation.None,
 })
 export class AffectationComponent { }
+
+// ./affectation.component.html

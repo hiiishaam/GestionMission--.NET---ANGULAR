@@ -53,8 +53,11 @@ export class AppPaiementComponent {
   }
 
   Load(): void {
-    this.data = this.service.Get();
-    this.dataSource.data = this.data;
+    this.service.Get().subscribe(data => {
+      this.data = data;  // Assigner les données récupérées à la variable 'data'
+      this.dataSource.data = this.data;  // Mettre à jour la source de données pour l'affichage
+      console.log('Paiements récupérés :', data);  // Affichage des données dans la console
+    });
   }
 
   add(): void {
