@@ -45,7 +45,7 @@ export class AppMissionComponent {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private service: MissionService, public dialog: MatDialog) {
+  constructor(private service: MissionService , public dialog: MatDialog) {
     this.Load();
   }
 
@@ -60,6 +60,12 @@ export class AppMissionComponent {
       console.log('Missions récupérées :', data);  // Affichage des données dans la console
     });
   }
+
+  // add(): void {
+
+  //   this.PdfService.print(1);
+
+  // }
   add(): void {
     const dialogRef = this.dialog.open(Add, {
     width: '90vw',

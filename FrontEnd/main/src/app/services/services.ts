@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { Observable, map,throwError } from 'rxjs';
-import { Employee, Fonction, Affectation, Vehicule, Mission, Paiement,StatusMission ,User} from '../model/Models';
-import {environment } from '../environments/environment'
+import { Employee, Fonction,UpdateMission, Affectation, Vehicule, Mission, Paiement,StatusMission ,User} from '../model/Models';
+import {environment } from '../environments/environment';
+import {jsPDF} from 'jspdf';
 
 //ok
 @Injectable({ providedIn: 'root' })
@@ -14,6 +15,27 @@ export class EmployeeService {
 
   Get(): Observable<Employee[]> {
     return this.http.get<any[]>(this.apiUrl).pipe(
+      map(employes =>
+        employes.map(e => ({
+          id: e.id,
+          firstName: e.firstName,
+          lastName: e.lastName,
+          fonctionId: e.fonctionId,
+          affectationId: e.affectationId,
+          actif: e.actif,
+          updateDate: e.updateDate,
+          createDate: e.createDate,
+          createdById: e.createdById,
+          createdBy: e.createdBy,
+          updatedById: e.updatedById,
+          updatedBy: e.updatedBy
+        } as Employee))
+      )
+    );
+  }
+
+  GetTeams(missionid:number): Observable<Employee[]> {
+    return this.http.get<any[]>(this.apiUrl+"/bymission/"+missionid).pipe(
       map(employes =>
         employes.map(e => ({
           id: e.id,
@@ -242,6 +264,16 @@ export class MissionService {
   //   );
   // }
 
+  UpdateTeamsAndVehicule(updated: Mission): Observable<Mission>{
+    const updatemission: UpdateMission = {
+      employeIds: updated.teamIds,
+      vehiculeId: updated.vehiculeId,
+      createdById: updated.createdById,
+      updatedById: updated.updatedById
+    };
+    return this.http.put<Mission>(`${this.apiUrl}/${updated.id}`, updatemission);
+  }
+
   GetStatus(): Observable<StatusMission[]> {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(statusList =>
@@ -262,7 +294,6 @@ export class MissionService {
     mission.createdById = userId;
     mission.updatedById = userId;
    console.log("my data :",mission);
-   debugger;
     return this.http.post<Mission>(this.apiUrl, mission);
   }
 
@@ -413,4 +444,175 @@ export class AuthService {
     this._user = null;
     localStorage.removeItem('user');
   }
+}
+
+@Injectable({ providedIn: 'root' })
+export class PdfService {
+  constructor(private http: HttpClient, ) {
+    this.loadImages();
+  }
+
+
+  // Images en Base64 (remplace par tes vraies valeurs)
+  private headerImg = '';
+  private footerImg = '';
+  private missionImg = '';
+  private apiUrl = 'https://jsonplaceholder.typicode.com/todos';
+ 
+  print(id:number) {
+    const doc = new jsPDF();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const headerHeight = 35;
+    const headerWidth = 100;
+     // Ajouter l'image d'en-tête à la position calculée
+    doc.addImage(this.headerImg, 'PNG', 50, 5, headerWidth, headerHeight);
+   
+    let y = 10 + headerHeight + 10;
+    // Infos en haut
+    doc.setFontSize(12);
+    doc.text('N° ............................ /Dir', 20, y);
+    doc.text('Le 21/04/2025', pageWidth - 60, y);
+    y += 5;
+    doc.addImage(this.missionImg, 'PNG', 25, y, 150, headerHeight);
+    y += 10;
+
+
+    doc.setFont('helvetica', 'normal');
+    y += 30;
+
+
+    // Données personnelles
+    const data = [
+      ['NOM ET PRENOM..................:', 'M. El Hou'],
+      ['FONCTION............................:', 'Adjoint Technique de 1er Grade'],
+      ['AFFECTATION.....................:', 'Errachidia'],
+      ['DESTINATION.....................:', 'Ouarzazate'],
+      ['MOTIF DE DEPLACEMENT....:', 'Raison de service'],
+      ['MOYEN DE TRANSPORT......:', 'Kia Matricule: 54876 T 6'],
+      ['ACCOMPAGNATEURS.........:', 'Personnes à bord']
+    ];
+    data.forEach(([label, value]) => {
+      doc.text(label, 20, y);
+      doc.text(value, 110, y);
+      y += 8;
+    });
+    y += 10;
+     // Tableau Départ
+     doc.setDrawColor(0);
+     doc.setLineWidth(0.5);
+     doc.rect(20, y, pageWidth - 40, 10);
+     doc.text('DATE ET HEURE DE DEPART', 22, y + 7);
+     doc.text('Le', 110, y + 7);
+     doc.text('21/04/2025', 120, y + 7);
+     doc.text('à', 150, y + 7);
+     doc.text('13:00:00', 160, y + 7);
+     y += 15;
+
+
+    // Tableau Arrivée
+    doc.rect(20, y, pageWidth - 40, 10);
+    doc.text('DATE ET HEURE D\'ARRIVEE', 22, y + 7);
+    doc.text('Le', 110, y + 7);
+    doc.text('', 120, y + 7);
+    doc.text('à', 150, y + 7);
+    doc.text('', 160, y + 7);
+    y += 20;
+
+
+    // Signature
+    const text = "Le Directeur de la CADETAF";
+    const x = pageWidth / 2;
+    doc.setFont('helvetica', 'normal');
+    doc.text(text, pageWidth / 2, y, { align: 'center' });
+    // Mesurer la largeur du texte pour dessiner la ligne
+    const textWidth = doc.getTextWidth(text);
+    doc.setLineWidth(0.5);
+    doc.line(x - textWidth / 2, y + 2, x + textWidth / 2, y + 2); // Ligne soulignée
+   
+    // Ajouter footer
+    doc.addImage(this.footerImg, 'PNG', 10, pageHeight - 25, pageWidth - 20, 15);
+    // Imprimer directement
+    const pdfBlob = doc.output('bloburl');
+    const printWindow = window.open(pdfBlob, '_blank');
+    if (printWindow) {
+      printWindow.onload = () => {
+        printWindow?.print();
+      };
+    }
+  }
+
+
+ // Fonction pour récupérer une image et la convertir en Base64
+  private getImageAsBase64(imagePath: string): Observable<string> {
+    return new Observable((observer) => {
+      this.http
+        .get(imagePath, { responseType: 'arraybuffer' })
+        .subscribe(
+          (data: ArrayBuffer) => {
+            const base64String = this.arrayBufferToBase64(data);
+            observer.next(base64String);
+            observer.complete();
+          },
+          (error) => {
+            observer.error(error);
+          }
+        );
+    });
+  }
+   // Conversion d'un ArrayBuffer en Base64
+   private arrayBufferToBase64(buffer: ArrayBuffer): string {
+    let binary = '';
+    const bytes = new Uint8Array(buffer);
+    const len = bytes.byteLength;
+
+
+    for (let i = 0; i < len; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+
+
+    return window.btoa(binary);
+  }
+ 
+  private loadImages() {
+    this.getImageAsBase64('../assets/header-cadetaf.png').subscribe(
+      (base64) => {
+        this.headerImg = base64;
+        console.log('Header Image Base64:', this.headerImg);
+      },
+      (error) => console.error('Erreur de chargement de l\'image :', error)
+    );
+
+
+    this.getImageAsBase64('../assets/footer-cadetaf.png').subscribe(
+      (base64) => {
+        this.footerImg = base64;
+        console.log('Footer Image Base64:', this.footerImg);
+      },
+      (error) => console.error('Erreur de chargement de l\'image :', error)
+    );
+
+
+    this.getImageAsBase64('../assets/ordre-mission.png').subscribe(
+      (base64) => {
+        this.missionImg = base64;
+        console.log('ordre Image Base64:', this.missionImg);
+      },
+      (error) => console.error('Erreur de chargement de l\'image :', error)
+    );
+  }
+
+
+  // GetMission(id:number): Observable<Mission[]> {
+  //   return this.http.get<any[]>(this.apiUrl).pipe(
+  //     map(todos =>
+  //       todos.map(todo => ({
+  //         id: todo.id,
+  //         name: todo.title,
+  //         description: 'Description automatique'
+  //       }))
+  //     )
+  //   );
+  // }
 }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace GestionMission.Controllers
 {
@@ -13,10 +14,12 @@ namespace GestionMission.Controllers
     public class MissionController : ControllerBase
     {
         private readonly IMissionService _service;
+        private readonly ITeamService _teamService;
 
-        public MissionController(IMissionService service)
+        public MissionController(IMissionService service, ITeamService teamService)
         {
             _service = service;
+            _teamService = teamService;
         }
 
         [HttpGet]
@@ -102,23 +105,58 @@ namespace GestionMission.Controllers
 
 
         [HttpPut("{id}")]
-        public ActionResult<Mission> Update(int id, [FromBody] Mission mission)
+        public ActionResult<Mission> Update(int id, [FromBody] MissionTeamsVehiculeDto mission)
         {
             try
             {
-                if (mission == null || id != mission.Id)
-                    return BadRequest("Données invalides");
+                var missiondb = _service.FindById(id);
 
-                var updatedMission = _service.Update(mission, id);
-                if (updatedMission == null)
+                if (missiondb != null)
+                {
+                    if(missiondb.VehiculeId != mission.VehiculeId)
+                    {
+                        missiondb.VehiculeId = mission.VehiculeId;
+                        missiondb.UpdatedById = mission.UpdatedById;
+                        missiondb =   _service.Update(missiondb, id);
+                    }
+
+                    var teamlist = _teamService.FindByMissionId(id);
+                    var teamListDto = mission.EmployeIds != null ? mission.EmployeIds.Select(employeid => new Team
+                    {
+                        Actif = true,
+                        CreatedById = mission.CreatedById,
+                        EmployeeId = employeid,
+                        UpdatedById = mission.UpdatedById,
+                        MissionId = id,
+                    }).ToList() : null;
+
+                    
+                    var res = Helpers.Helpre.CompareLists(teamlist, teamListDto);
+                   if(res.onlyInFirst != null && res.onlyInFirst.Any())
+                    {
+                        foreach(var team in res.onlyInFirst)
+                        {
+                            _teamService.Delete(team.Id);
+                        }
+                    }
+                    if (res.onlyInSecond != null && res.onlyInSecond.Any())
+                    {
+                        foreach (var team in res.onlyInSecond)
+                        {
+                            _teamService.Add(team);
+                        }
+                    }
+
+                }
+
+                if (missiondb == null)
                     return NotFound();
 
-                return Ok(updatedMission);
+                return Ok(missiondb);
             }
             catch (Exception ex)
             {
-                // Log the exception (optional)
-                // _logger.LogError(ex, "An error occurred while updating the mission.");
+        
                 return StatusCode(500, "Une erreur interne est survenue. Veuillez réessayer plus tard.");
             }
         }

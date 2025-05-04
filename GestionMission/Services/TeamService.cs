@@ -45,9 +45,14 @@ namespace GestionMission.Services
 
         public List<Team> FindByEmployerId(int employerId)
         {
+
             return _db.teams.Where(t => t.EmployeeId == employerId).ToList();
         }
 
+        public List<Team> FindByMissionId(int missionId)
+        {
+            return _db.teams.Where(t => t.MissionId == missionId).ToList();
+        }
         public Team Update(Team team, int id)
         {
             var existingTeam = _db.teams.Find(id);

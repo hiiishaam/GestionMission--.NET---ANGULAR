@@ -7,7 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
-import { EmployeeService,VehiculeService,MissionService } from '../../../services/services';
+import { EmployeeService,VehiculeService,MissionService ,PdfService} from '../../../services/services';
 import { Employee,Vehicule,StatusMission } from '../../../model/Models';
 import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
@@ -39,6 +39,7 @@ export class Add {
     private employeeService: EmployeeService, // Injection du service
     private VehiculeService: VehiculeService, // Service pour les véhicules
     private MissionService: MissionService, // Service pour les missions
+    private PdfService: PdfService,
     private router: Router
   ) {}
 
@@ -66,7 +67,7 @@ export class Add {
   }
 
   loadTeams(): void {
-    this.employeeService.Get().subscribe((data) => {
+    this.employeeService.GetTeams(this.data.data.id).subscribe((data) => {
       this.employes = data;
       console.log('Employés récupérés :', this.employes);
     });
@@ -105,31 +106,68 @@ export class Add {
     }
   }
 
-  nextStep(): void {
+  // nextStep(): void {
     
-    if (this.currentStep < 3) {
+  //   if (this.currentStep < 3) {
       
-      if(this.data.data.id == 0){
-        this.data.data.statutId = 1;
-        this.MissionService.Add(this.data.data).subscribe({
-          next: (createdMission) => {this.data.data.id = createdMission.id; this.currentStep++ ;},
-          error: (err) => console.error('Erreur ajout :', err)
-        });
-      }
-      else if(this.currentStep != 1){
-        this.MissionService.Update(this.data.data).subscribe({
-          next: () => this.currentStep++,
-          error: (err) => console.error('Erreur ajout :', err)
-        });
-      }
-      else {
-        this.currentStep++;
-      }
+  //     if(this.data.data.id == 0){
+  //       this.data.data.statutId = 1;
+  //       this.MissionService.Add(this.data.data).subscribe({
+  //         next: (createdMission) => {this.data.data.id = createdMission.id; this.currentStep++ ;},
+  //         error: (err) => console.error('Erreur ajout :', err)
+  //       });
+  //     }
+  //     else if(this.currentStep != 1){
+  //       this.MissionService.Update(this.data.data).subscribe({
+  //         next: () => this.currentStep++,
+  //         error: (err) => console.error('Erreur ajout :', err)
+  //       });
+  //     }
+  //     else {
+  //       this.currentStep++;
+  //     }
+  //   }
+  //    // Charger les employés quand on atteint l'étape 2
+  //   if (this.currentStep === 2) {
+  //     this.loadTeams();  // Appel de la méthode load() pour charger les employés
+  //   }
+  // }
+  nextStep(): void 
+  {  
+    switch (this.currentStep) 
+    {
+      case 1:
+          this.ProcessStep1();
+          break
+      case 2:
+        this.ProcessStep2();
+         break;
+      default: 
+        break;
     }
-     // Charger les employés quand on atteint l'étape 2
-    if (this.currentStep === 2) {
-      this.loadTeams();  // Appel de la méthode load() pour charger les employés
+  }
+  ProcessStep1()
+  {
+    if(this.data.data.id == 0)
+    {
+      this.data.data.statutId = 1;
+      this.MissionService.Add(this.data.data).subscribe({
+        next: (createdMission) => {this.data.data.id = createdMission.id; this.currentStep++ ;},
+        error: (err) => console.error('Erreur ajout :', err)
+      });
     }
+    else
+    {
+      this.currentStep++;
+    }
+    this.loadTeams(); 
+  }
+  ProcessStep2()
+  {
+    this.MissionService.UpdateTeamsAndVehicule(this.data.data).subscribe({
+      next: () => this.currentStep++,
+      error: (err) => console.error('Erreur ajout :', err)
+    });
   }
 
   previousStep(): void {
@@ -139,18 +177,7 @@ export class Add {
   }
   
   printMission(): void {
-    this.data.data.employeName = this.getEmployeeNameById( this.data.data.employeId);
-    this.data.data.teamList =  this.data.data.teamIds.map((id: number) => this.getEmployeeNameById(id)).join(', ');
-    this.data.data.vehiculeName = this.getVehiculeNameById( this.data.data.vehicleId);
-    const printContent =  this.MissionService.GetPrintContent(this.data.data);
-    const printWindow = window.open('', '', 'width=800,height=600');
-    if (printWindow) {
-      printWindow.document.open();
-      printWindow.document.write(printContent);
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(() => printWindow.print(), 500);
-    }
+    this.PdfService.print(this.data.data.id);
   }
   
   formatDate(dateStr: string): string {

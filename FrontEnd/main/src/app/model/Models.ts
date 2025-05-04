@@ -117,3 +117,10 @@ export interface Employee {
     createDate: Date;  // Champ pour la date de création
   }
   
+  export interface UpdateMission {
+    employeIds?: number[];
+    vehiculeId?: number;
+    createdById: number;
+    updatedById: number;
+  }
+  

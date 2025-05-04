@@ -67,6 +67,12 @@ namespace GestionMission.Services
             return _db.employees.Include(e => e.Fonction).Include(e => e.Affectation).ToList();
         }
 
+        public List<Employee> FindByIds(List<int> ids)
+        {
+         
+            return _db.employees.Where(e => ids.Contains(e.Id)).Include(e => e.Fonction).Include(e => e.Affectation).ToList();
+        }
+
         // Trouver un employé par ID
         public Employee FindById(int id)
         {

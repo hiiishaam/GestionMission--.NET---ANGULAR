@@ -12,10 +12,12 @@ namespace GestionMission.Controllers
     public class EmployerController : ControllerBase
     {
         private readonly IEmployerService _service;
+        private readonly ITeamService _teamService;
 
-        public EmployerController(IEmployerService service)
+        public EmployerController(IEmployerService service, ITeamService teamService  )
         {
             _service = service;
+            _teamService = teamService;
         }
 
         // GET: api/employer
@@ -34,6 +36,23 @@ namespace GestionMission.Controllers
                 return NotFound($"Aucun employé trouvé avec l'ID {id}");
 
             return Ok(employer);
+        }
+
+        [HttpGet("bymission/{id}")]
+        public ActionResult<List<Employee>> GetByIdMission(int id)
+        {
+            //var teamlist = _teamService.FindByMissionId(id);
+            //List<Employee> employer = new List<Employee>();
+
+            //if (teamlist != null && teamlist.Any())
+            //{
+            //    employer = _service.FindByIds(teamlist.Select(e => e.EmployeeId).ToList());
+            //}
+
+            //return Ok(employer);
+
+
+            return Ok(_service.FindAll());
         }
 
         // GET: api/employer/byname/{nom}

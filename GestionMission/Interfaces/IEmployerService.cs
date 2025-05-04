@@ -10,5 +10,6 @@ namespace GestionMission.Interfaces
         Employee Add(Employee employer);
         Employee Update(Employee employer, int id);
         Employee Delete(int id);
+        List<Employee> FindByIds(List<int> ids);
     }
 }

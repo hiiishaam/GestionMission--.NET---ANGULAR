@@ -10,5 +10,6 @@ namespace GestionMission.Interfaces
         Team Add(Team team);
         Team Update(Team team, int id);
         Team Delete(int id);
+        List<Team> FindByMissionId(int missionId);
     }
 }
