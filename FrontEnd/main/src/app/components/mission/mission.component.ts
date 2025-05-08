@@ -60,19 +60,17 @@ export class AppMissionComponent {
       console.log('Missions récupérées :', data);  // Affichage des données dans la console
     });
   }
-
-  // add(): void {
-
-  //   this.PdfService.print(1);
-
-  // }
   add(): void {
+    const data =  { id: 0, name: 'Créer une mission', statutId : 1  };
+    this.addOrUpdate(data);
+  }
+  addOrUpdate(item : any): void {
     const dialogRef = this.dialog.open(Add, {
     width: '90vw',
     height: '80vh',
     maxHeight: '100vh',
     panelClass: 'full-screen-dialog',
-        data: { data: { id: 0, name: '', statutId : 1  } }
+        data: { data: item }
       });
     dialogRef.afterClosed().subscribe((result) => {
         if (result) {
@@ -84,22 +82,10 @@ export class AppMissionComponent {
         }
       });
     }
-  
   // Méthode pour ouvrir le dialog d'édition
   edit(data: Mission): void {
-    const dialogRef = this.dialog.open(Edit, {
-      width: '90vw',
-      height: '80vh',
-      maxHeight: '100vh',
-      data: { data: { ...data } }
-    });
-
-    dialogRef.afterClosed().subscribe((result) => {
-      if (result) {
-        this.service.Update(result);  // Mettre à jour l'employé
-        this.Load();  // Recharger la liste après modification
-      }
-    });
+    data.name = "Éditer la mission";
+    this.addOrUpdate(data);
   }
     // Méthode pour afficher la confirmation avant suppression
   delete(id: number): void {

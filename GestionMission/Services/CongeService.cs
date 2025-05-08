@@ -2,6 +2,7 @@
 using GestionMission.Entities;
 using GestionMission.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace GestionMission.Services
 {
@@ -50,12 +51,19 @@ namespace GestionMission.Services
             return conge;
         }
 
-        public List<Conge> FindAll()
-        {
-            return _db.conges.ToList();
-        }
+        //public List<Conge> FindAll()
+        //{
+        //    return _db.conges.ToList();
+        //}
 
-        public List<Conge> FindByDateDebut(string date)
+
+        public List<Conge> FindAll()
+             {
+             return _db.conges.Include(c => c.Employee).ToList();
+             }
+
+
+    public List<Conge> FindByDateDebut(string date)
         {
             throw new NotImplementedException();
         }

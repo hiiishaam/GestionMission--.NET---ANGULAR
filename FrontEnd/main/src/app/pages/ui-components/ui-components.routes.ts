@@ -8,6 +8,7 @@ import { AppFonctionComponent } from 'src/app/components/fonction/fonction.compo
 import { AppMissionComponent } from 'src/app/components/mission/mission.component';
 import { AppPaiementComponent } from 'src/app/components/paiement/paiement.component';
 import { AppVehiculeComponent } from 'src/app/components/vehicule/vehicule.component';
+import { AppCongeComponent } from 'src/app/components/conge/conge.component';
 
 
 export const UiComponentsRoutes: Routes = [
@@ -38,6 +39,10 @@ export const UiComponentsRoutes: Routes = [
       {
         path: 'vehicule',
         component: AppVehiculeComponent,
+      },
+      {
+        path: 'conge',
+        component: AppCongeComponent,
       }
     ],
   },

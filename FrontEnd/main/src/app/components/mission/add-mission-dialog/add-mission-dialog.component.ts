@@ -80,7 +80,6 @@ export class Add {
     // Si l'employé est trouvé, retourne son nom, sinon retourne 'Inconnu'
     return emp ? emp.firstName : 'Inconnu';
   }
-  
   getVehiculeNameById(id: number): string {
     const vehicle = this.vehicules.find(v => v.id === id);
     return vehicle ? vehicle.name : 'Inconnu';
@@ -91,7 +90,7 @@ export class Add {
     switch (this.currentStep) {
       case 1:
         // Étape 1 : Vérification de la validité des champs (nom, dates, description)
-        return this.data.data.description &&  this.data.data.name && this.data.data.dateDebut && this.data.data.dateFin && this.data.data.employeId != null;
+        return this.data.data.description && this.data.data.dateDebut && this.data.data.dateFin && this.data.data.employeId != null;
       case 2:
         // Étape 2 : Vérification de la validité de l'employé concerné
         return true;// this.data.data.employeId != null;

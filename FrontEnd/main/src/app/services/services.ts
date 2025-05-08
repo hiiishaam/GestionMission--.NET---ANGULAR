@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { Observable, map,throwError } from 'rxjs';
-import { Employee, Fonction,UpdateMission, Affectation, Vehicule, Mission, Paiement,StatusMission ,User} from '../model/Models';
+import { Employee,OrdreMissionDetails, Fonction,UpdateMission, Affectation, Vehicule, Mission, Paiement,StatusMission ,User, Conge} from '../model/Models';
 import {environment } from '../environments/environment';
 import {jsPDF} from 'jspdf';
 
@@ -73,6 +73,11 @@ export class EmployeeService {
   Delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  GetEmployeeById(id: number): Observable<Employee> {
+    return this.http.get<Employee>(`${this.apiUrl}/${id}`);
+  }
+  
 }
 
 //ok
@@ -215,12 +220,12 @@ export class VehiculeService {
 
 @Injectable({ providedIn: 'root' })
 export class MissionService {
-  //private apiUrl = environment.apiUrl +'/todos';
   private apiUrl = environment.apiUrl + '/Mission';
-  // private apiUrl = 'https://jsonplaceholder.typicode.com/todos';
-
   constructor(private http: HttpClient, private authService: AuthService) {}
 
+  getOrdreMissionDetails(missionId: number): Observable<OrdreMissionDetails[]> {
+    return this.http.get<OrdreMissionDetails[]>(`${this.apiUrl}/ordre-mission-details/${missionId}`);
+  }
 
   Get(): Observable<Mission[]> {
     return this.http.get<any[]>(this.apiUrl).pipe(
@@ -448,23 +453,40 @@ export class AuthService {
 
 @Injectable({ providedIn: 'root' })
 export class PdfService {
-  constructor(private http: HttpClient, ) {
+  constructor(private http: HttpClient, private MissionService: MissionService ) {
     this.loadImages();
   }
-
 
   // Images en Base64 (remplace par tes vraies valeurs)
   private headerImg = '';
   private footerImg = '';
   private missionImg = '';
-  private apiUrl = 'https://jsonplaceholder.typicode.com/todos';
- 
+
   print(id:number) {
+    this.MissionService.getOrdreMissionDetails(id).subscribe({
+      next: (data) => {
+        if (data) {
+          this.OpenPdf(data);
+        } else {
+          console.warn('Aucune donnée reçue pour l’ordre de mission.');
+        }
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération des détails:', err);
+      }
+    });
+  }
+
+  private OpenPdf(datas:OrdreMissionDetails[]) {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     const headerHeight = 35;
     const headerWidth = 100;
+
+    datas.forEach((data, index) => {
+      if (index > 0) doc.addPage(); // Ajouter une page sauf pour la première
+
      // Ajouter l'image d'en-tête à la position calculée
     doc.addImage(this.headerImg, 'PNG', 50, 5, headerWidth, headerHeight);
    
@@ -472,31 +494,47 @@ export class PdfService {
     // Infos en haut
     doc.setFontSize(12);
     doc.text('N° ............................ /Dir', 20, y);
-    doc.text('Le 21/04/2025', pageWidth - 60, y);
+    doc.text('Le '+data.le, pageWidth - 60, y);
     y += 5;
     doc.addImage(this.missionImg, 'PNG', 25, y, 150, headerHeight);
     y += 10;
-
-
+  
     doc.setFont('helvetica', 'normal');
     y += 30;
 
-
-    // Données personnelles
-    const data = [
-      ['NOM ET PRENOM..................:', 'M. El Hou'],
-      ['FONCTION............................:', 'Adjoint Technique de 1er Grade'],
-      ['AFFECTATION.....................:', 'Errachidia'],
-      ['DESTINATION.....................:', 'Ouarzazate'],
-      ['MOTIF DE DEPLACEMENT....:', 'Raison de service'],
-      ['MOYEN DE TRANSPORT......:', 'Kia Matricule: 54876 T 6'],
-      ['ACCOMPAGNATEURS.........:', 'Personnes à bord']
+    // Données personnelle
+    const rows = [
+      ['NOM ET PRENOM..................:', data.nomPrenom],
+      ['FONCTION..............................:', data.fonction],
+      ['AFFECTATION........................:', data.affectation],
+      ['DESTINATION.........................:', data.destination],
+      ['MOTIF DE DEPLACEMENT....:', data.motifDeplacement],
+      ['MOYEN DE TRANSPORT.......:', data.moyenDeTransport],
+      ['ACCOMPAGNATEURS...........:', data.accompagnateurs]
     ];
-    data.forEach(([label, value]) => {
+    // rows.forEach(([label, value]) => {
+    //   doc.text(label, 20, y);
+    //   doc.text(value, 110, y);
+    //   y += 8;
+    // });
+    rows.forEach(([label, value]) => {
+      // Affichage du label
       doc.text(label, 20, y);
-      doc.text(value, 110, y);
-      y += 8;
+    
+      // Découpe du texte de la valeur (value) si nécessaire
+      const lines = doc.splitTextToSize(value, 90);
+    
+      // Si lines est un tableau, itérer avec une boucle classique
+      for (let i = 0; i < lines.length; i++) {
+        doc.text(lines[i], 110, y + (i * 8)); // Décale chaque ligne de 8mm verticalement
+      }
+    
+      // Ajuste la position y après avoir affiché la dernière ligne de la valeur
+      y += lines.length * 8; // y est augmenté de la hauteur des lignes affichées
     });
+
+
+
     y += 10;
      // Tableau Départ
      doc.setDrawColor(0);
@@ -504,9 +542,9 @@ export class PdfService {
      doc.rect(20, y, pageWidth - 40, 10);
      doc.text('DATE ET HEURE DE DEPART', 22, y + 7);
      doc.text('Le', 110, y + 7);
-     doc.text('21/04/2025', 120, y + 7);
+     doc.text(data.dateDepart, 120, y + 7);
      doc.text('à', 150, y + 7);
-     doc.text('13:00:00', 160, y + 7);
+     doc.text(data.heureDepart, 160, y + 7);
      y += 15;
 
 
@@ -514,9 +552,9 @@ export class PdfService {
     doc.rect(20, y, pageWidth - 40, 10);
     doc.text('DATE ET HEURE D\'ARRIVEE', 22, y + 7);
     doc.text('Le', 110, y + 7);
-    doc.text('', 120, y + 7);
+    doc.text(data.dateArrivee, 120, y + 7);
     doc.text('à', 150, y + 7);
-    doc.text('', 160, y + 7);
+    doc.text(data.heureArrivee, 160, y + 7);
     y += 20;
 
 
@@ -532,6 +570,7 @@ export class PdfService {
    
     // Ajouter footer
     doc.addImage(this.footerImg, 'PNG', 10, pageHeight - 25, pageWidth - 20, 15);
+  });
     // Imprimer directement
     const pdfBlob = doc.output('bloburl');
     const printWindow = window.open(pdfBlob, '_blank');
@@ -542,8 +581,8 @@ export class PdfService {
     }
   }
 
-
- // Fonction pour récupérer une image et la convertir en Base64
+  
+ // Fonction pour récupérer une image et la convertir en Base6
   private getImageAsBase64(imagePath: string): Observable<string> {
     return new Observable((observer) => {
       this.http
@@ -615,4 +654,88 @@ export class PdfService {
   //     )
   //   );
   // }
+}
+
+
+@Injectable({ providedIn: 'root' })
+export class CongeService {
+  private apiUrl = environment.apiUrl + '/Conge';
+  
+  constructor(private http: HttpClient, private serviceEmp : EmployeeService , private authService: AuthService) {}
+
+
+  Get(): Observable<Conge[]> {
+    return this.http.get<any[]>(this.apiUrl).pipe(
+      map(conges =>
+        conges.map(e => ({
+          id: e.id,
+          reason: e.reason,
+          startDate: e.startDate,
+          endDate: e.endDate,
+          employeeId: e.employeeId,
+          employee: e.employee,
+          actif: e.actif,
+          updateDate: e.updateDate,
+          createDate: e.createDate,
+          createdById: e.createdById,
+          createdBy: e.createdBy,
+          updatedById: e.updatedById,
+          updatedBy: e.updatedBy
+        } as Conge))
+      )
+    );
+  }
+  
+  // Get(): Observable<Conge[]> {
+  //   return this.http.get<Conge[]>(this.apiUrl);
+  //   return this.http.get<any[]>(this.apiUrl).pipe(
+  //     map(conges =>
+  //       conges.map(e => ({
+  //         id: e.id,
+  //         reason: e.reason,
+  //         StartDate: e.startDate
+  //       } as unknown as Conge))
+  //     )
+  //   );
+  // }
+
+  // GetTeams(missionid:number): Observable<Employee[]> {
+  //   return this.http.get<any[]>(this.apiUrl+"/bymission/"+missionid).pipe(
+  //     map(employes =>
+  //       employes.map(e => ({
+  //         id: e.id,
+  //         firstName: e.firstName,
+  //         lastName: e.lastName,
+  //         fonctionId: e.fonctionId,
+  //         affectationId: e.affectationId,
+  //         actif: e.actif,
+  //         updateDate: e.updateDate,
+  //         createDate: e.createDate,
+  //         createdById: e.createdById,
+  //         createdBy: e.createdBy,
+  //         updatedById: e.updatedById,
+  //         updatedBy: e.updatedBy
+  //       } as Employee))
+  //     )
+  //   );
+  // }
+
+  Add(conge: Conge): Observable<Conge> {
+    const userId = this.authService.getUser().id;
+    const now = new Date().toISOString(); // format ISO correct pour ton backend
+    conge.createdById = userId;
+    conge.updatedById = userId;
+    conge.createDate = now;
+    conge.updateDate = now;
+    return this.http.post<Conge>(this.apiUrl, conge);
+  }
+
+  Update(conge: Conge): Observable<Employee> {
+    conge.updatedById = this.authService.getUser().id;
+    return this.http.put<Employee>(`${this.apiUrl}/${conge.id}`, conge);
+  }
+
+  Delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

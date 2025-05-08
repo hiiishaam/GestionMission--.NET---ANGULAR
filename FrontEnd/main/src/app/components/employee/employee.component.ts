@@ -110,13 +110,6 @@ export class AppEmployeeComponent {
             }
     });
 
-  //   dialogRef.afterClosed().subscribe((result) => {
-  //     if (result) {
-  //       this.service.Update(result);  // Mettre à jour l'employé
-  //       this.Load();  // Recharger la liste après modification
-  //     }
-  //   });
-  // }
   dialogRef.afterClosed().subscribe((result) => {
     if (result) {
       this.service.Update(result).subscribe({
@@ -147,19 +140,6 @@ delete(id: number): void {
     }
   });
 }
-
-  // delete(id: number): void {
-  //   const dialogRef = this.dialog.open(Delete, {
-  //     width: '400px',
-  //     data: { data: { id: id } }
-  //   });
-  //   dialogRef.afterClosed().subscribe((result) => {
-  //     if (result) {
-  //       this.service.Delete(id);
-  //       this.Load();
-  //     }
-  //   });
-  // }
 
   getFonctionLibelle(fonctionId: number | null | undefined): string {
   if (!fonctionId) {

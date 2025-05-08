@@ -1,0 +1,13 @@
+<mat-dialog-content>
+  <h3>Éditer le congé</h3>
+<br/>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Nom</mat-label>
+    <input matInput [(ngModel)]="data.data.reason" placeholder="Entrez le nom">
+  </mat-form-field>
+
+  <mat-dialog-actions>
+    <button mat-raised-button color="primary" (click)="save()">Enregistrer</button>
+    <button mat-raised-button color="warn" (click)="onCancel()">Annuler</button>
+  </mat-dialog-actions>
+</mat-dialog-content>

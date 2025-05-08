@@ -10,5 +10,6 @@ namespace GestionMission.Interfaces
         Mission Add(Mission mission);
         Mission Update(Mission mission, int id);
         Mission Delete(int id);
+        List<OrdreMissionDetails> GetOrdreMissionDetails(int missionId);
     }
 }

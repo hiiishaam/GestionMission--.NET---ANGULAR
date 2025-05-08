@@ -123,4 +123,34 @@ export interface Employee {
     createdById: number;
     updatedById: number;
   }
+  export interface Conge {
+    id: number;
+    reason: string;
+    startDate: Date;
+    endDate: Date;
+    employeeId: number;
+    employee: Employee;
+    actif: boolean;
+    updateDate: string | null; 
+    createDate: string | null;
+    createdById: number | null;
+    createdBy: any | null; 
+    updatedById: number | null;
+    updatedBy: any | null; 
+  }
+
+  export interface OrdreMissionDetails {
+    le: string;
+    nomPrenom: string;
+    fonction: string;
+    affectation: string;
+    destination: string;
+    motifDeplacement: string;
+    moyenDeTransport: string;
+    accompagnateurs: string;
+    dateDepart: string; 
+    heureDepart: string; 
+    dateArrivee: string;
+    heureArrivee: string;
+  }
   

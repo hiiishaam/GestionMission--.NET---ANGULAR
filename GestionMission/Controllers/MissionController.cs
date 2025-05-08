@@ -2,10 +2,6 @@
 using GestionMission.Interfaces;
 using GestionMission.Model;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Text.RegularExpressions;
 
 namespace GestionMission.Controllers
 {
@@ -71,6 +67,7 @@ namespace GestionMission.Controllers
                 return StatusCode(500, "Une erreur interne est survenue. Veuillez réessayer plus tard.");
             }
         }
+
         [HttpPost]
         public async Task<ActionResult<Mission>> Create([FromBody] MissionDto dto)
         {
@@ -102,7 +99,6 @@ namespace GestionMission.Controllers
                 return StatusCode(500, "Une erreur interne est survenue. Veuillez réessayer plus tard.");
             }
         }
-
 
         [HttpPut("{id}")]
         public ActionResult<Mission> Update(int id, [FromBody] MissionTeamsVehiculeDto mission)
@@ -179,5 +175,28 @@ namespace GestionMission.Controllers
                 return StatusCode(500, "Une erreur interne est survenue. Veuillez réessayer plus tard.");
             }
         }
+
+        /// <summary>
+        /// GetOrdreMissionDetails
+        /// </summary>
+        /// <param name="missionId"></param>
+        /// <returns></returns>
+        [HttpGet("ordre-mission-details/{missionId}")]
+        public ActionResult<List<Model.OrdreMissionDetails>> GetOrdreMissionDetails(int missionId)
+        {
+            try
+            {
+                var result =  _service.GetOrdreMissionDetails(missionId);
+
+                result = result ?? [];
+                
+                return Ok(Helpers.Helpre.ConvertList(result));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Une erreur s'est produite : {ex.Message}");
+            }
+        }
+
     }
 }

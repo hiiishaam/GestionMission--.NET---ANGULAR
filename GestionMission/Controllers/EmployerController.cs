@@ -14,7 +14,7 @@ namespace GestionMission.Controllers
         private readonly IEmployerService _service;
         private readonly ITeamService _teamService;
 
-        public EmployerController(IEmployerService service, ITeamService teamService  )
+        public EmployerController(IEmployerService service, ITeamService teamService)
         {
             _service = service;
             _teamService = teamService;

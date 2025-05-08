@@ -1,4 +1,4 @@
-<h2 mat-dialog-title style="text-align: center;">Créer une mission</h2>
+<h2 mat-dialog-title style="text-align: center;">{{data.data.name}}</h2>
 
 <mat-dialog-content>
 
@@ -8,9 +8,9 @@
     <br/>
     <br/>
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Nom de la mission</mat-label>
-      <input matInput [(ngModel)]="data.data.name" [disabled]="isReadOnly" placeholder="Entrez la Raison" required #name="ngModel">
-      <mat-error *ngIf="name.invalid && name.touched">Le nom est requis.</mat-error>
+      <mat-label>Raison de la mission</mat-label>
+      <textarea matInput [(ngModel)]="data.data.description" [disabled]="isReadOnly" required #end="ngModel" placeholder="Entrez le motif de deplacement"></textarea>
+      <mat-error *ngIf="end.invalid && end.touched">La raison est obligatoire.</mat-error>
     </mat-form-field>
     <br/>
     <br/>
@@ -36,13 +36,6 @@
       <mat-label>Date de fin</mat-label>
       <input matInput type="date" [(ngModel)]="data.data.dateFin" [disabled]="isReadOnly" required #end="ngModel" >
       <mat-error *ngIf="end.invalid && end.touched">La date de fin est requise.</mat-error>
-    </mat-form-field>
-    <br/>
-    <br/>
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Motif de deplacement</mat-label>
-      <textarea matInput [(ngModel)]="data.data.description" [disabled]="isReadOnly" required #end="ngModel" placeholder="Entrez le motif de deplacement"></textarea>
-      <mat-error *ngIf="end.invalid && end.touched">Le Motif est obligatoire.</mat-error>
     </mat-form-field>
   </div>
 

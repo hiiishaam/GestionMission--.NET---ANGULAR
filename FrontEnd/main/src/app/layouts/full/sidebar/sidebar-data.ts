@@ -46,5 +46,10 @@ export const navItems: NavItem[] = [
     displayName: 'Vehicule',
     iconName: 'solar:file-text-line-duotone',
     route: '/ui-components/vehicule',
+  } ,
+  {
+    displayName: 'Conge',
+    iconName: 'solar:file-text-line-duotone',
+    route: '/ui-components/conge',
   } 
 ];

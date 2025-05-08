@@ -1,0 +1,43 @@
+<h2 mat-dialog-title>Ajouter un congé</h2>
+<br/>
+<mat-dialog-content>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>reason</mat-label>
+    <input matInput [(ngModel)]="data.data.name" name="reason">
+  </mat-form-field>
+  <br/>
+  <br/>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Date de début</mat-label>
+    <input matInput type="date" [(ngModel)]="data.data.dateDebut" required #start="ngModel">
+    <mat-error *ngIf="start.invalid && start.touched">La date de début est requise.</mat-error>
+  </mat-form-field>
+  <br/>
+  <br/>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Date de fin</mat-label>
+    <input matInput type="date" [(ngModel)]="data.data.dateFin" required #end="ngModel" >
+    <mat-error *ngIf="end.invalid && end.touched">La date de fin est requise.</mat-error>
+  </mat-form-field>
+  <br/>
+  <br/>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Employer</mat-label>
+    <mat-select [(ngModel)]="data.data.employee"  name="EmployeeId">
+      <mat-option *ngFor="let employee of data.employee" [value]="employee">
+        {{ employee.firstName }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline" class="full-width">
+    <mat-label>Actif</mat-label>
+    <mat-select [(ngModel)]="data.data.actif" name="actif">
+      <mat-option [value]="true">Oui</mat-option>
+      <mat-option [value]="false">Non</mat-option>
+    </mat-select>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions >
+  <button mat-button (click)="onCancel()">Annuler</button>
+  <button mat-raised-button color="primary" (click)="save()">Ajouter</button>
+</mat-dialog-actions>
