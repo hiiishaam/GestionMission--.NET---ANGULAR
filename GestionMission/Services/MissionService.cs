@@ -239,5 +239,32 @@ namespace GestionMission.Services
             return results;
         }
 
+        /// <summary>
+        /// GetVehiculesDisponibles
+        /// </summary>
+        /// <param name="missionId"></param>
+        /// <returns></returns>
+        public List<VehiculeDisponible> GetVehiculesDisponibles(int missionId)
+        {
+            var results = _db.Set<VehiculeDisponible>()
+                .FromSqlRaw("EXEC GetVehiculesDisponibles @IdMission = {0}", missionId)
+                .ToList();
+
+            return results;
+        }
+
+        /// <summary>
+        /// GetEmployeesDisponibles
+        /// </summary>
+        /// <param name="missionId"></param>
+        /// <returns></returns>
+        public List<EmployeeDisponible> GetEmployeesDisponibles(int missionId)
+        {
+            var results = _db.Set<EmployeeDisponible>()
+                .FromSqlRaw("EXEC GetEmployeesDisponibles @IdMission = {0}", missionId)
+                .ToList();
+            return results;
+        }
+
     }
 }

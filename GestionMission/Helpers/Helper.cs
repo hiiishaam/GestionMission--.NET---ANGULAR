@@ -2,7 +2,7 @@
 
 namespace GestionMission.Helpers
 {
-    public class Helpre
+    public class Helper
     {
         public static (List<Team> inBoth, List<Team> onlyInFirst, List<Team> onlyInSecond) CompareLists(List<Team> firstList, List<Team> secondList)
         {
@@ -34,5 +34,40 @@ namespace GestionMission.Helpers
                 HeureArrivee = string.IsNullOrWhiteSpace(s.HEURE_ARRIVEE) ? string.Empty : s.HEURE_ARRIVEE
             }).ToList();
         }
+
+        /// <summary>
+        /// ConvertList
+        /// </summary>
+        /// <param name="sourceList"></param>
+        /// <returns></returns>
+        public static List<Model.VehiculeDisponible> ConvertList(List<VehiculeDisponible> sourceList)
+        {
+            return sourceList.Select(s => new Model.VehiculeDisponible
+            {
+                VehiculeId = s.VehiculeId,
+                VehiculeName = string.IsNullOrWhiteSpace(s.VehiculeName) ? string.Empty : s.VehiculeName,
+                LicensePlate = string.IsNullOrWhiteSpace(s.LicensePlate) ? string.Empty : s.LicensePlate,
+                Horsepower = s.Horsepower,
+                EstAffecteAMission  = s.EstAffecteAMission.HasValue ? s.EstAffecteAMission.Value == 1 : false,
+            }).ToList();
+        }
+
+        /// <summary>
+        /// ConvertList
+        /// </summary>
+        /// <param name="sourceList"></param>
+        /// <returns></returns>
+        public static List<Model.EmployeeDisponible> ConvertList(List<EmployeeDisponible> sourceList)
+        {
+            return sourceList.Select(s => new Model.EmployeeDisponible
+            {
+                EmployeeId = s.EmployeeId,
+                FirstName = string.IsNullOrWhiteSpace(s.FirstName) ? string.Empty : s.FirstName,
+                LastName = string.IsNullOrWhiteSpace(s.LastName) ? string.Empty : s.LastName,
+                EstAffecteAMission = s.EstAffecteAMission.HasValue ? s.EstAffecteAMission.Value == 1: false,
+            }).ToList();
+        }
+
+
     }
 }

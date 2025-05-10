@@ -40,18 +40,6 @@ export class View {
     private MissionService: MissionService // Service pour les missions
   ) {}
 
-  printMission(): void {
-    const printContent =  this.MissionService.GetPrintContent(this.data.data);
-    const printWindow = window.open('', '', 'width=800,height=600');
-    if (printWindow) {
-      printWindow.document.open();
-      printWindow.document.write(printContent);
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(() => printWindow.print(), 500);
-    }
-  }
-
   onCancel(): void {
     this.dialogRef.close();
   }

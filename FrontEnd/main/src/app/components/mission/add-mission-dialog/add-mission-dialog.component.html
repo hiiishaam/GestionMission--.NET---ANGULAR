@@ -25,18 +25,57 @@
     </mat-form-field>
     <br/>
     <br/>
+      <!-- Date de départ (requise) -->
+   <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date de départ</mat-label>
+      <input matInput [(ngModel)]="data.data.dateDepart"
+            [matDatepicker]="pickerDepart"
+            [disabled]="isReadOnly"
+            required
+            #retour="ngModel"
+            readonly />
+      <mat-datepicker-toggle matIconSuffix [for]="pickerDepart"></mat-datepicker-toggle>
+      <mat-datepicker #pickerDepart></mat-datepicker>
+      <mat-error *ngIf="retour.invalid && retour.touched">La date de départ est requise.</mat-error>
+    </mat-form-field>
+
+    <!-- Heure de départ (requise) -->
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Date de début</mat-label>
-      <input matInput type="date" [(ngModel)]="data.data.dateDebut" [disabled]="isReadOnly" required #start="ngModel">
-      <mat-error *ngIf="start.invalid && start.touched">La date de début est requise.</mat-error>
+      <mat-label>Heure de départ</mat-label>
+      <input matInput type="time"
+            [(ngModel)]="data.data.heureDepart"
+            required
+            #time="ngModel"
+            [disabled]="isReadOnly" />
+      <mat-error *ngIf="time.invalid && time.touched">L'heure de départ est requise.</mat-error>
     </mat-form-field>
     <br/>
     <br/>
+      <!-- Date de retour (requise) -->
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Date de fin</mat-label>
-      <input matInput type="date" [(ngModel)]="data.data.dateFin" [disabled]="isReadOnly" required #end="ngModel" >
-      <mat-error *ngIf="end.invalid && end.touched">La date de fin est requise.</mat-error>
+      <mat-label>Date de retour</mat-label>
+      <input matInput [(ngModel)]="data.data.dateRetour"
+            [matDatepicker]="pickerRetour"
+            [disabled]="isReadOnly"
+            required
+            #retour="ngModel"
+            readonly />
+      <mat-datepicker-toggle matIconSuffix [for]="pickerRetour"></mat-datepicker-toggle>
+      <mat-datepicker #pickerRetour></mat-datepicker>
+      <mat-error *ngIf="retour.invalid && retour.touched">La date de retour est requise.</mat-error>
     </mat-form-field>
+
+    <!-- Heure de retour (requise) -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Heure de retour</mat-label>
+      <input matInput type="time"
+            [(ngModel)]="data.data.heureRetour"
+            [disabled]="isReadOnly"
+            required
+            #timeRetour="ngModel" />
+      <mat-error *ngIf="timeRetour.invalid && timeRetour.touched">L'heure de retour est requise.</mat-error>
+    </mat-form-field>
+
   </div>
 
   <!-- Étape 2 : Sélection des membres de l'équipe -->
@@ -51,7 +90,7 @@
         <mat-form-field appearance="outline" class="full-width" style="flex-grow: 1;">
           <mat-label>Sélectionner les membres de l'équipe</mat-label>
           <mat-select [(ngModel)]="data.data.teamIds" multiple required #team="ngModel">
-            <mat-option *ngFor="let emp of employes" [value]="emp.id">
+            <mat-option *ngFor="let emp of teams" [value]="emp.employeeId">
               {{ emp.firstName + " "+ emp.lastName }}
             </mat-option>
           </mat-select>
@@ -75,8 +114,8 @@
     <mat-form-field appearance="outline" class="full-width" style="flex-grow: 1;">
       <mat-label>Sélectionner un véhicule</mat-label>
       <mat-select [(ngModel)]="data.data.vehiculeId" required #vehicle="ngModel">
-        <mat-option *ngFor="let vehicule of vehicules" [value]="vehicule.id">
-          {{ vehicule.name }}
+        <mat-option *ngFor="let vehicule of vehicules" [value]="vehicule.vehiculeId">
+          {{ vehicule.vehiculeName }}
         </mat-option>
       </mat-select>
       <mat-error *ngIf="vehicle.invalid && vehicle.touched">Veuillez sélectionner un véhicule.</mat-error>

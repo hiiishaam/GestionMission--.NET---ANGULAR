@@ -17,21 +17,20 @@ import { MatSelectModule } from '@angular/material/select';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatDialogModule ,
+    MatDialogModule,
     MatSelectModule
   ],
   templateUrl: './add-conge-dialog.component.html'
 })
-export class AddCongeDialogComponent  {
-[x: string]: any;
+export class AddCongeDialogComponent {
   constructor(
-    public dialogRef: MatDialogRef<AddCongeDialogComponent >,
+    public dialogRef: MatDialogRef<AddCongeDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
+
   save(): void {
     this.dialogRef.close(this.data.data);
   }
-  
 
   onCancel(): void {
     this.dialogRef.close();

@@ -82,7 +82,6 @@ export class AppEmployeeComponent {
                   id: 0,
                   firstName: '',
                   lastName: '',
-                  
                   actif: true,  
                 } as Employee, 
               fonctions: this.fonctions, 

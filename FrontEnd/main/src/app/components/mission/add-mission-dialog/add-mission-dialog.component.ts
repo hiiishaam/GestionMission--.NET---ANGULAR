@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -8,9 +8,23 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
 import { EmployeeService,VehiculeService,MissionService ,PdfService} from '../../../services/services';
-import { Employee,Vehicule,StatusMission } from '../../../model/Models';
+import { Employee,EmployeeDisponible,VehiculeDisponible,OrdreMissionDetails,Vehicule,StatusMission } from '../../../model/Models';
 import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
+
+const MY_DATE_FORMATS = {
+  parse: {
+    dateInput: 'dd/MM/yyyy',
+  },
+  display: {
+    dateInput: 'dd/MM/yyyy',
+    monthYearLabel: 'MMM yyyy',
+    dateA11yLabel: 'dd/MM/yyyy',
+    monthYearA11yLabel: 'MMMM yyyy',
+  },
+};
 
 @Component({
   selector: 'app-add-mission-dialog',
@@ -23,16 +37,22 @@ import { Router } from '@angular/router';
     MatButtonModule,
     MatDialogModule,
     MatTabsModule,
-    MatSelectModule
+    MatSelectModule,
+    MatDatepickerModule,
   ],
-  templateUrl: './add-mission-dialog.component.html'
+  templateUrl: './add-mission-dialog.component.html',
+  providers: [
+    provideNativeDateAdapter(),
+    { provide: MAT_DATE_LOCALE, useValue: 'fr-FR' }, 
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+  ],
 })
 export class Add {
   currentStep: number = 1;
   employes: Employee[] = [];
-  vehicules: Vehicule[] = [];
+  vehicules: VehiculeDisponible[] = [];
   statusMission: StatusMission[] = [];
-
+  teams : EmployeeDisponible[] = [];
   constructor(
     public dialogRef: MatDialogRef<Add>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -54,35 +74,39 @@ export class Add {
       this.employes = data;
       console.log('Employés récupérés :', this.employes);
     });
-    // Charger les véhicules
-    this.VehiculeService.Get().subscribe((data) => {
-      this.vehicules = data;
-      console.log('vehicules récupérés :', this.vehicules);
-    });
+   
     // Charger les status
     this.MissionService.GetStatus().subscribe((data) => {
       this.statusMission = data;
       console.log('status Mission récupérés :', this.statusMission);
     });
   }
+     loadVehicules(): void {
+   // Charger les véhicules
+    this.MissionService.getVehiculesDisponibles(this.data.data.id).subscribe((data) => {
+      this.vehicules = data;
+      console.log('vehicules récupérés :', this.vehicules);
+    });
+  }
 
   loadTeams(): void {
-    this.employeeService.GetTeams(this.data.data.id).subscribe((data) => {
-      this.employes = data;
-      console.log('Employés récupérés :', this.employes);
+     // Charger les véhicules
+    this.MissionService.getEmployeesDisponibles(this.data.data.id).subscribe((data) => {
+      this.teams = data;
+      console.log('teams récupérés :', this.teams);
     });
   }
 
   getEmployeeNameById(empId: number): string {
     // Recherche l'employé par son ID dans la liste des employés
-    const emp = this.employes.find(employee => employee.id === empId);
+    const emp = this.teams.find(employee => employee.employeeId === empId);
   
     // Si l'employé est trouvé, retourne son nom, sinon retourne 'Inconnu'
-    return emp ? emp.firstName : 'Inconnu';
+    return emp ? emp.firstName +' '+ emp.lastName : 'Inconnu';
   }
   getVehiculeNameById(id: number): string {
-    const vehicle = this.vehicules.find(v => v.id === id);
-    return vehicle ? vehicle.name : 'Inconnu';
+    const vehicle = this.vehicules.find(v => v.vehiculeId === id);
+    return vehicle ? vehicle.vehiculeName : 'Inconnu';
   }
 
   // Vérification de la validité pour chaque étape
@@ -90,7 +114,7 @@ export class Add {
     switch (this.currentStep) {
       case 1:
         // Étape 1 : Vérification de la validité des champs (nom, dates, description)
-        return this.data.data.description && this.data.data.dateDebut && this.data.data.dateFin && this.data.data.employeId != null;
+        return this.data.data.description && this.data.data.dateDepart && this.data.data.dateRetour && this.data.data.employeId != null && this.data.data.heureRetour && this.data.data.heureDepart;
       case 2:
         // Étape 2 : Vérification de la validité de l'employé concerné
         return true;// this.data.data.employeId != null;
@@ -105,32 +129,6 @@ export class Add {
     }
   }
 
-  // nextStep(): void {
-    
-  //   if (this.currentStep < 3) {
-      
-  //     if(this.data.data.id == 0){
-  //       this.data.data.statutId = 1;
-  //       this.MissionService.Add(this.data.data).subscribe({
-  //         next: (createdMission) => {this.data.data.id = createdMission.id; this.currentStep++ ;},
-  //         error: (err) => console.error('Erreur ajout :', err)
-  //       });
-  //     }
-  //     else if(this.currentStep != 1){
-  //       this.MissionService.Update(this.data.data).subscribe({
-  //         next: () => this.currentStep++,
-  //         error: (err) => console.error('Erreur ajout :', err)
-  //       });
-  //     }
-  //     else {
-  //       this.currentStep++;
-  //     }
-  //   }
-  //    // Charger les employés quand on atteint l'étape 2
-  //   if (this.currentStep === 2) {
-  //     this.loadTeams();  // Appel de la méthode load() pour charger les employés
-  //   }
-  // }
   nextStep(): void 
   {  
     switch (this.currentStep) 
@@ -151,15 +149,23 @@ export class Add {
     {
       this.data.data.statutId = 1;
       this.MissionService.Add(this.data.data).subscribe({
-        next: (createdMission) => {this.data.data.id = createdMission.id; this.currentStep++ ;},
+        next: (createdMission) =>
+           {
+            this.data.data.id = createdMission.id; 
+            this.loadTeams(); 
+            this.loadVehicules();
+            this.currentStep++ ;
+           },
         error: (err) => console.error('Erreur ajout :', err)
       });
     }
     else
     {
+      this.loadTeams(); 
+      this.loadVehicules();
       this.currentStep++;
     }
-    this.loadTeams(); 
+  
   }
   ProcessStep2()
   {

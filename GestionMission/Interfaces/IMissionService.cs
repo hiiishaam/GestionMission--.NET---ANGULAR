@@ -11,5 +11,7 @@ namespace GestionMission.Interfaces
         Mission Update(Mission mission, int id);
         Mission Delete(int id);
         List<OrdreMissionDetails> GetOrdreMissionDetails(int missionId);
+        List<VehiculeDisponible> GetVehiculesDisponibles(int missionId);
+        List<EmployeeDisponible> GetEmployeesDisponibles(int missionId);
     }
 }

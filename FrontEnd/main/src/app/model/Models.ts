@@ -68,16 +68,19 @@ export interface Employee {
     id: number;
     name: string;
     description: string;
-    membres?: string; // Ou string[] si tu veux une liste
+    membres?: string; 
     employeId?: number;
     employeName?:string;
     vehiculeId?:number;
     vehiculeName?:string;
     statutId?:number;
-    // Onglet Déplacement
     destination?: string;
-    dateDepart?: string;  // Format ISO string (ex: '2025-04-20')
-    dateRetour?: string;  // Pareil que ci-dessus
+    heureDepart? : string;
+    heureRetour? : string;
+    dateDepart?: Date;
+    dateRetour?: Date; 
+    dateDepartString?: string;
+    dateRetourString?: string;
     teamIds?: number[];
     teamList?: string;
     createdById:number;
@@ -123,21 +126,22 @@ export interface Employee {
     createdById: number;
     updatedById: number;
   }
-  export interface Conge {
-    id: number;
-    reason: string;
-    startDate: Date;
-    endDate: Date;
-    employeeId: number;
-    employee: Employee;
-    actif: boolean;
-    updateDate: string | null; 
-    createDate: string | null;
-    createdById: number | null;
-    createdBy: any | null; 
-    updatedById: number | null;
-    updatedBy: any | null; 
-  }
+
+export interface Conge {
+  id: number;
+  reason: string;
+  startDate?: string; // Utiliser des chaînes de caractères pour les dates (format ISO)
+  endDate?: string;   // Utiliser des chaînes de caractères pour les dates (format ISO)
+  employeeId?: number;
+  employee?: Employee;
+  actif: boolean;
+  updateDate: string | null;
+  createDate: string | null;
+  createdById: number | null;
+  createdBy: any | null;
+  updatedById: number | null;
+  updatedBy: any | null;
+}
 
   export interface OrdreMissionDetails {
     le: string;
@@ -153,4 +157,17 @@ export interface Employee {
     dateArrivee: string;
     heureArrivee: string;
   }
-  
+
+  export interface EmployeeDisponible {
+  employeeId: number;
+  firstName: string;
+  lastName: string;
+  estAffecteAMission: boolean;
+}
+  export interface VehiculeDisponible {
+  vehiculeId: number;
+  vehiculeName: string;
+  licensePlate: string;
+  horsepower: number;
+  estAffecteAMission: boolean;
+}

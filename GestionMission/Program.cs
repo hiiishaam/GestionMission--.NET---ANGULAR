@@ -46,6 +46,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+
 // Rediriger HTTP vers HTTPS (doit être avant CORS)
 app.UseHttpsRedirection();
 

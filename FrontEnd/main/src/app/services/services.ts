@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { Observable, map,throwError } from 'rxjs';
-import { Employee,OrdreMissionDetails, Fonction,UpdateMission, Affectation, Vehicule, Mission, Paiement,StatusMission ,User, Conge} from '../model/Models';
+import { Employee,VehiculeDisponible,EmployeeDisponible,OrdreMissionDetails, Fonction,UpdateMission, Affectation, Vehicule, Mission, Paiement,StatusMission ,User, Conge} from '../model/Models';
 import {environment } from '../environments/environment';
 import {jsPDF} from 'jspdf';
 
@@ -224,50 +224,49 @@ export class MissionService {
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   getOrdreMissionDetails(missionId: number): Observable<OrdreMissionDetails[]> {
-    return this.http.get<OrdreMissionDetails[]>(`${this.apiUrl}/ordre-mission-details/${missionId}`);
+      return this.http.get<OrdreMissionDetails[]>(`${this.apiUrl}/ordre-mission-details/${missionId}`);
+    }
+
+  getEmployeesDisponibles(missionId: number): Observable<EmployeeDisponible[]> {
+    return this.http.get<EmployeeDisponible[]>(`${this.apiUrl}/employees-disponibles/${missionId}`);
   }
 
+  getVehiculesDisponibles(missionId: number): Observable<VehiculeDisponible[]> {
+    return this.http.get<VehiculeDisponible[]>(`${this.apiUrl}/vehicules-disponibles/${missionId}`);
+  }
   Get(): Observable<Mission[]> {
-    return this.http.get<any[]>(this.apiUrl).pipe(
-      map(missions =>
-        missions.map(mission => ({
+  return this.http.get<any[]>(this.apiUrl).pipe(
+    map(missions =>
+      missions.map(mission => {
+        const { date: dateDepart, time: heureDepart } = this.parseISOStringToLocalDateAndTime(mission.dateDebut);
+        const { date: dateRetour, time: heureRetour } = this.parseISOStringToLocalDateAndTime(mission.dateFin);
+        return {
           id: mission.id,
           name: mission.name,
-          depart :mission.villeDepart,            
-          description: mission.raison,   
-          membres: mission.employer?.name, // Si "employer" existe, tu peux ajouter son nom
+          depart: mission.villeDepart,
+          description: mission.raison,
+          membres: mission.employer?.name,
           employeId: mission.employerId,
-          employeName: mission.employer?.lastName, // Si "employer" existe, tu ajoutes son nom
+          employeName: mission.employer?.lastName,
           vehiculeId: mission.vehiculeId,
-          vehiculeName: mission.vehicule?.name, // Mappage du nom du véhicule
+          vehiculeName: mission.vehicule?.name,
           statutId: mission.statutId,
-          destination: mission.villeArrive,  // Ville d'arrivée comme "destination"
-          dateDepart: mission.dateDebut,  // Convertir en ISO string
-          dateRetour: mission.dateFin,   // Convertir en ISO string
-          teamIds: [],                       // Si tu as des IDs de groupe, tu peux les ajouter ici
+          destination: mission.villeArrive,
+          dateDepart : dateDepart,
+          heureDepart : heureDepart,
+          dateRetour : dateRetour,
+          heureRetour: heureRetour,
+          teamIds: [],
           teamList: mission.employer?.name,
           createdById: mission.createdById,
           createdBy: mission.createdBy,
           updatedById: mission.updatedById,
           updatedBy: mission.updatedBy
-
-            // Si tu veux lister des membres, tu peux adapter ici
-        } as Mission))
-      )
-    );
+        };
+      })
+    )
+  );
   }
-  
-  // Get(): Observable<Mission[]> {
-  //   return this.http.get<any[]>(this.apiUrl).pipe(
-  //     map(todos =>
-  //       todos.map(todo => ({
-  //         id: todo.id,
-  //         name: todo.title,
-  //         description: 'Description automatique'
-  //       }))
-  //     )
-  //   );
-  // }
 
   UpdateTeamsAndVehicule(updated: Mission): Observable<Mission>{
     const updatemission: UpdateMission = {
@@ -291,15 +290,42 @@ export class MissionService {
     );
   }
 
+private formatDateToISOString(date?: Date, heurestring?: string): string {
+  if (!date) return '';
+  if (heurestring) {
+    const [hoursStr, minutesStr] = heurestring.split(':');
+    const hours = parseInt(hoursStr, 10);
+    const minutes = parseInt(minutesStr, 10);
+
+    if (!isNaN(hours) && !isNaN(minutes)) {
+      date.setHours(hours);
+      date.setMinutes(minutes);
+    }
+  }
+  return date.toISOString();
+
+}
+private parseISOStringToLocalDateAndTime(isoString?: string): { date?: Date ; time: string } {
+  if (!isoString) return { date: undefined, time: '' };
+  const date = new Date(isoString);
+  if (isNaN(date.getTime())) return { date: undefined, time: '' };
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return {
+    date: date, 
+    time: `${hours}:${minutes}` 
+  };
+}
+
   Add(mission: Mission): Observable<Mission> {
-    // const userId = this.authService.getUser().id;
-    // mission.dateDepart = Date.toString();
-    // mission.dateRetour = Date.toString();
+    let missionToAdd = mission;
+    missionToAdd.dateDepartString = this.formatDateToISOString(mission.dateDepart, mission.heureDepart);
+    missionToAdd.dateRetourString = this.formatDateToISOString(mission.dateRetour, mission.heureRetour);
     const userId = this.authService.getUser().id;
-    mission.createdById = userId;
-    mission.updatedById = userId;
-   console.log("my data :",mission);
-    return this.http.post<Mission>(this.apiUrl, mission);
+    missionToAdd.createdById = userId;
+    missionToAdd.updatedById = userId;
+   console.log("my data :",missionToAdd);
+    return this.http.post<Mission>(this.apiUrl, missionToAdd);
   }
 
   Update(updated: Mission): Observable<Mission> {
@@ -308,33 +334,6 @@ export class MissionService {
   
   Delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
-
-  GetPrintContent(mission : Mission){
-    const printContent = `
-      <html>
-        <head>
-          <title>Mission - ${mission.name}</title>
-          <style>
-            body { font-family: Arial, sans-serif; padding: 20px; }
-            h2 { text-align: center; }
-            p { margin: 8px 0; }
-          </style>
-        </head>
-        <body>
-          <h2>Détails de la mission</h2>
-          <p><strong>Nom :</strong> ${mission.name}</p>
-          <p><strong>Employé concerné :</strong> ${mission.employeName}</p>
-          <p><strong>Date de début :</strong> ${this.formatDate(mission.dateDepart ?? '')}</p>
-          <p><strong>Date de fin :</strong> ${this.formatDate(mission.dateRetour ?? '')}</p>
-          <p><strong>Description :</strong> ${mission.description || 'Aucune description'}</p>
-          <p><strong>Équipe :</strong> ${mission.teamList}</p>
-          <p><strong>Véhicule :</strong> ${mission.vehiculeName}</p>
-        </body>
-      </html>
-    `;
-
-    return printContent;
   }
 
   formatDate(dateStr: string): string {
@@ -685,44 +684,9 @@ export class CongeService {
       )
     );
   }
-  
-  // Get(): Observable<Conge[]> {
-  //   return this.http.get<Conge[]>(this.apiUrl);
-  //   return this.http.get<any[]>(this.apiUrl).pipe(
-  //     map(conges =>
-  //       conges.map(e => ({
-  //         id: e.id,
-  //         reason: e.reason,
-  //         StartDate: e.startDate
-  //       } as unknown as Conge))
-  //     )
-  //   );
-  // }
-
-  // GetTeams(missionid:number): Observable<Employee[]> {
-  //   return this.http.get<any[]>(this.apiUrl+"/bymission/"+missionid).pipe(
-  //     map(employes =>
-  //       employes.map(e => ({
-  //         id: e.id,
-  //         firstName: e.firstName,
-  //         lastName: e.lastName,
-  //         fonctionId: e.fonctionId,
-  //         affectationId: e.affectationId,
-  //         actif: e.actif,
-  //         updateDate: e.updateDate,
-  //         createDate: e.createDate,
-  //         createdById: e.createdById,
-  //         createdBy: e.createdBy,
-  //         updatedById: e.updatedById,
-  //         updatedBy: e.updatedBy
-  //       } as Employee))
-  //     )
-  //   );
-  // }
-
   Add(conge: Conge): Observable<Conge> {
     const userId = this.authService.getUser().id;
-    const now = new Date().toISOString(); // format ISO correct pour ton backend
+    const now = new Date().toISOString(); 
     conge.createdById = userId;
     conge.updatedById = userId;
     conge.createDate = now;

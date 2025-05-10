@@ -42,11 +42,12 @@ import { EmployeeService,CongeService} from '../../services/services';
 export class AppCongeComponent {
   displayedColumns: string[] = ['id', 'reason','StartDate','EndDate','employee' ,'actif','actions'];
   data: Conge[] = [];
+  employees: Employee[] = [];
   dataSource = new MatTableDataSource<Conge>();
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private service: CongeService, public dialog: MatDialog) {
+  constructor(private serviceEmployee: EmployeeService,private service: CongeService, public dialog: MatDialog) {
     this.Load();
   }
 
@@ -57,12 +58,18 @@ export class AppCongeComponent {
   }
 
   Load(): void {
-    this.service.Get().subscribe(data => {
-      this.data = data; // Assigner les données récupérées à la variable 'data'
-      this.dataSource.data = this.data; // Mettre à jour la source de données pour l'affichage
-      console.log('Conges récupérées :', data); // Affichage des données dans la console
-    });
-  }
+  this.service.Get().subscribe(data => {
+    this.data = data; // Assigner les données récupérées à la variable 'data'
+    this.dataSource.data = this.data; // Mettre à jour la source de données pour l'affichage
+    console.log('Congés récupérés :', data); // Affichage des données dans la console
+  });
+
+  // Récupérer les employés via le service EmployeeService
+  this.serviceEmployee.Get().subscribe(data => {
+    this.employees = data; // Assigner les employés récupérés à la variable 'employees'
+    console.log('Employés récupérés :', data); // Affichage dans la console
+  });
+}
 
   add(): void {
     const dialogRef = this.dialog.open(AddCongeDialogComponent , {
@@ -72,12 +79,13 @@ export class AppCongeComponent {
           id: 0,
           reason: '',
           actif: true,
-        } as Conge
+        } as Conge,
+         employees : this.employees 
       }
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        console.log(result);
+        console.log("haahahahahahaha",result);
         this.service.Add(result).subscribe({
           next: () => this.Load(),
           error: (err) => console.error('Erreur ajout :', err)
@@ -128,5 +136,13 @@ export class AppCongeComponent {
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+
+    getEmployeeLibelle(employeeId: number | null | undefined): string {
+  if (!employeeId) {
+    return 'Non défini';
+  }
+  const employee = this.employees.find(f => f.id === employeeId);
+  return employee ? employee.lastName : 'Non défini';
   }
 }

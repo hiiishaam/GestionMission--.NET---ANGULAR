@@ -19,8 +19,11 @@ namespace GestionMission.Data
         public DbSet<Payment> payments { get; set; }
         public DbSet<Vehicule> vehicules { get; set; }
         public DbSet<User> users { get; set; }
-        public DbSet<OrdreMissionDetails> OrdreMissionDetails { get; set; }
 
+        /// <summary>
+        /// OnModelCreating
+        /// </summary>
+        /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Team>()
@@ -125,8 +128,16 @@ namespace GestionMission.Data
                .WithMany()  // Définir la relation inverse (si applicable)
                .HasForeignKey(a => a.UpdatedById)
                .OnDelete(DeleteBehavior.Restrict);  // Empêcher la suppression en cascade
+
             modelBuilder.Entity<OrdreMissionDetails>().HasNoKey();
             modelBuilder.Entity<OrdreMissionDetails>().ToView(null);
+
+            modelBuilder.Entity<VehiculeDisponible>().HasNoKey();
+            modelBuilder.Entity<VehiculeDisponible>().ToView(null);
+
+
+            modelBuilder.Entity<EmployeeDisponible>().HasNoKey();
+            modelBuilder.Entity<EmployeeDisponible>().ToView(null);
         }
     }
 }

@@ -123,20 +123,6 @@ export class Edit {
     }
   }
   
-  printMission(): void {
-    this.data.data.employeName = this.getEmployeeNameById( this.data.data.employeId);
-    this.data.data.teamList =  this.data.data.teamIds.map((id: number) => this.getEmployeeNameById(id)).join(', ');
-    this.data.data.vehiculeName = this.getVehiculeNameById( this.data.data.vehicleId);
-    const printContent =  this.MissionService.GetPrintContent(this.data.data);
-    const printWindow = window.open('', '', 'width=800,height=600');
-    if (printWindow) {
-      printWindow.document.open();
-      printWindow.document.write(printContent);
-      printWindow.document.close();
-      printWindow.focus();
-      setTimeout(() => printWindow.print(), 500);
-    }
-  }
   
   formatDate(dateStr: string): string {
     const date = new Date(dateStr);

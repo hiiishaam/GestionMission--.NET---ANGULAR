@@ -80,8 +80,8 @@ namespace GestionMission.Controllers
                 {
                     Raison = dto.Description,
 
-                    DateDebut = dto.DateDebut,
-                    DateFin = dto.DateFin,
+                    DateDebut = DateTime.Parse(dto.DateDepartString),
+                    DateFin = DateTime.Parse(dto.DateRetourString),
                     EmployerId = dto.EmployeId,
                     VehiculeId = dto.VehiculeId,
                     StatutId = dto.StatutId,
@@ -127,7 +127,7 @@ namespace GestionMission.Controllers
                     }).ToList() : null;
 
                     
-                    var res = Helpers.Helpre.CompareLists(teamlist, teamListDto);
+                    var res = Helpers.Helper.CompareLists(teamlist, teamListDto);
                    if(res.onlyInFirst != null && res.onlyInFirst.Any())
                     {
                         foreach(var team in res.onlyInFirst)
@@ -190,7 +190,49 @@ namespace GestionMission.Controllers
 
                 result = result ?? [];
                 
-                return Ok(Helpers.Helpre.ConvertList(result));
+                return Ok(Helpers.Helper.ConvertList(result));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Une erreur s'est produite : {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// GetEmployeesDisponibles
+        /// </summary>
+        /// <param name="missionId"></param>
+        /// <returns></returns>
+        [HttpGet("employees-disponibles/{missionId}")]
+        public ActionResult<List<Model.EmployeeDisponible>> GetEmployeesDisponibles(int missionId)
+        {
+            try
+            {
+                var result = _service.GetEmployeesDisponibles(missionId);
+                result = result ?? [];
+
+                return Ok(Helpers.Helper.ConvertList(result));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Une erreur s'est produite : {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// GetVehiculesDisponibles
+        /// </summary>
+        /// <param name="missionId"></param>
+        /// <returns></returns>
+        [HttpGet("vehicules-disponibles/{missionId}")]
+        public ActionResult<List<Model.VehiculeDisponible>> GetVehiculesDisponibles(int missionId)
+        {
+            try
+            {
+                var result = _service.GetVehiculesDisponibles(missionId);
+                result = result ?? [];
+
+                return Ok(Helpers.Helper.ConvertList(result));
             }
             catch (Exception ex)
             {
