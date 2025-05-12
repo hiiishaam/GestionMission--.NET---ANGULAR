@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { MissionService } from '../../services/services';
+import { MissionService, PdfService } from '../../services/services';
 import { Mission } from '../../model/Models';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -45,7 +45,7 @@ export class AppMissionComponent {
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private service: MissionService , public dialog: MatDialog) {
+  constructor(private service: MissionService ,private PdfService : PdfService, public dialog: MatDialog) {
     this.Load();
   }
 
@@ -100,18 +100,16 @@ export class AppMissionComponent {
       }
     });
   }
-  view(mission: Mission) {
-    // Exemple : ouvrir une boîte de dialogue ou router vers une page de détails
-    this.dialog.open(View, {
-      width: '90vw',
-      height: '80vh',
-      maxHeight: '100vh',
-      data: mission
-    });
-  
-    // OU rediriger vers une page dédiée
-    // this.router.navigate(['/missions', mission.id]);
-  }
+
+ view(mission: Mission) {
+  this.PdfService.GetPdf(mission.id).then((pdfUrl) => {
+  this.dialog.open(View, {
+    data: { pdfUrl },
+    width: '80%',
+    height: '80%'
+  });
+});
+}
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();

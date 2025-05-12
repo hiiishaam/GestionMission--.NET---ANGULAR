@@ -290,9 +290,9 @@ export class MissionService {
     );
   }
 
-private formatDateToISOString(date?: Date, heurestring?: string): string {
-  if (!date) return '';
-  if (heurestring) {
+  private formatDateToISOString(date?: Date, heurestring?: string): string {
+      if (!date) return '';
+        if (heurestring) {
     const [hoursStr, minutesStr] = heurestring.split(':');
     const hours = parseInt(hoursStr, 10);
     const minutes = parseInt(minutesStr, 10);
@@ -461,6 +461,28 @@ export class PdfService {
   private footerImg = '';
   private missionImg = '';
 
+  GetPdf(id: number): Promise<string> {
+  return new Promise((resolve, reject) => {
+    this.MissionService.getOrdreMissionDetails(id).subscribe({
+      next: (data) => {
+        if (data) {
+          const doc = this.GetDocument(data);
+          const blobUrl = doc.output('bloburl');
+          resolve(blobUrl.toString());
+        } else {
+          console.warn('Aucune donnée reçue pour l’ordre de mission.');
+          reject('Pas de données');
+        }
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération des détails:', err);
+        reject(err);
+      }
+    });
+  });
+}
+
+
   print(id:number) {
     this.MissionService.getOrdreMissionDetails(id).subscribe({
       next: (data) => {
@@ -475,8 +497,20 @@ export class PdfService {
       }
     });
   }
+  
+   private OpenPdf(datas:OrdreMissionDetails[]) {
+    const doc = this.GetDocument(datas);
+        // Imprimer directement
+    const pdfBlob = doc.output('bloburl');
+    const printWindow = window.open(pdfBlob, '_blank');
+    if (printWindow) {
+      printWindow.onload = () => {
+        printWindow?.print();
+      };
+    }
+   }
 
-  private OpenPdf(datas:OrdreMissionDetails[]) {
+  private GetDocument(datas:OrdreMissionDetails[]) {
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -511,11 +545,6 @@ export class PdfService {
       ['MOYEN DE TRANSPORT.......:', data.moyenDeTransport],
       ['ACCOMPAGNATEURS...........:', data.accompagnateurs]
     ];
-    // rows.forEach(([label, value]) => {
-    //   doc.text(label, 20, y);
-    //   doc.text(value, 110, y);
-    //   y += 8;
-    // });
     rows.forEach(([label, value]) => {
       // Affichage du label
       doc.text(label, 20, y);
@@ -570,14 +599,7 @@ export class PdfService {
     // Ajouter footer
     doc.addImage(this.footerImg, 'PNG', 10, pageHeight - 25, pageWidth - 20, 15);
   });
-    // Imprimer directement
-    const pdfBlob = doc.output('bloburl');
-    const printWindow = window.open(pdfBlob, '_blank');
-    if (printWindow) {
-      printWindow.onload = () => {
-        printWindow?.print();
-      };
-    }
+  return doc;
   }
 
   
@@ -658,18 +680,17 @@ export class PdfService {
 
 @Injectable({ providedIn: 'root' })
 export class CongeService {
-  private apiUrl = environment.apiUrl + '/Conge';
+  private apiUrl = environment.apiUrl +'/Conge';
   
   constructor(private http: HttpClient, private serviceEmp : EmployeeService , private authService: AuthService) {}
-
-
+  
   Get(): Observable<Conge[]> {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(conges =>
         conges.map(e => ({
           id: e.id,
           reason: e.reason,
-          startDate: e.startDate,
+          startDate: e.StartDate,
           endDate: e.endDate,
           employeeId: e.employeeId,
           employee: e.employee,
@@ -685,18 +706,19 @@ export class CongeService {
     );
   }
   Add(conge: Conge): Observable<Conge> {
+    console.log('ici Service', conge );
     const userId = this.authService.getUser().id;
     const now = new Date().toISOString(); 
     conge.createdById = userId;
     conge.updatedById = userId;
     conge.createDate = now;
     conge.updateDate = now;
-    return this.http.post<Conge>(this.apiUrl, conge);
+   return this.http.post<Conge>(this.apiUrl, conge);
   }
 
-  Update(conge: Conge): Observable<Employee> {
+  Update(conge: Conge): Observable<Conge> {
     conge.updatedById = this.authService.getUser().id;
-    return this.http.put<Employee>(`${this.apiUrl}/${conge.id}`, conge);
+    return this.http.put<Conge>(`${this.apiUrl}/${conge.id}`, conge);
   }
 
   Delete(id: number): Observable<void> {

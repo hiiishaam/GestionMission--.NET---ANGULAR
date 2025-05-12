@@ -126,21 +126,96 @@
   <div *ngIf="currentStep === 3">
     <h3>Récapitulatif</h3>
     <br/>
-    <div style="display: flex; flex-direction: column; align-items: flex-start; width: 100%; padding-right: 20px;">
-      <p><strong>Nom de la mission :</strong> {{ data.data.name }}</p>
-      <p><strong>status de la mission :</strong> {{ data.data.statutId }}</p>
-      <p><strong>Employé concerné :</strong> {{ getEmployeeNameById(data.data.employeId) }}</p>
-      <p><strong>Date de début :</strong> {{ data.data.dateDebut | date: 'dd/MM/yyyy' }}</p>
-      <p><strong>Date de fin :</strong> {{ data.data.dateFin | date: 'dd/MM/yyyy' }}</p>
-      <p><strong>Description :</strong> {{ data.data.description || 'Aucune description fournie' }}</p>
-      <p><strong>Employés de l'équipe :</strong></p>
-      <ul style="padding-left: 0; list-style: none;">
-        <li *ngFor="let empId of data.data.teamIds">
-          {{ getEmployeeNameById(empId) }}
-        </li>
-      </ul>
-      <p><strong>Véhicule sélectionné :</strong> {{ getVehiculeNameById(data.data.vehiculeId) }}</p>
-    </div>
+    <html lang="fr">
+    <head>
+      <meta charset="UTF-8">
+      <title>Ordre de Mission</title>
+      <style>
+        body {
+          font-family: "Times New Roman", Times, serif;
+          margin: 40px;
+        }
+        .center {
+          text-align: center;
+        }
+        .title {
+          font-weight: bold;
+          font-size: 18px;
+          text-decoration: underline;
+          margin-top: 10px;
+        }
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 30px;
+        }
+        td {
+          padding: 6px;
+          vertical-align: top;
+        }
+        .label {
+          font-weight: bold;
+        }
+        .section-box {
+          border: 1px solid black;
+          margin-top: 20px;
+          padding: 10px;
+        }
+        .section-box strong {
+          font-size: 14px;
+        }
+      </style>
+    </head>
+    <body>
+
+      <div class="center">
+        <div style="font-weight: bold;">تكليف بمهمة</div>
+        <div class="title">ORDRE DE MISSION</div>
+      </div>
+
+      <table>
+        <tr>
+          <td class="label">NOM ET PRENOM:</td>
+          <td>{{ ordreMissionDetails.nomPrenom }}</td>
+        </tr>
+        <tr>
+          <td class="label">FONCTION:</td>
+          <td>{{ ordreMissionDetails.fonction }}</td>
+        </tr>
+        <tr>
+          <td class="label">AFFECTATION:</td>
+          <td>{{ ordreMissionDetails.affectation }}</td>
+        </tr>
+        <tr>
+          <td class="label">DESTINATION:</td>
+          <td>{{ ordreMissionDetails.destination }}</td>
+        </tr>
+        <tr>
+          <td class="label">MOTIF DE DEPLACEMENT:</td>
+          <td>{{ ordreMissionDetails.motifDeplacement }}</td>
+        </tr>
+        <tr>
+          <td class="label">MOYEN DE TRANSPORT:</td>
+          <td>{{ ordreMissionDetails.moyenDeTransport }}</td>
+        </tr>
+        <tr>
+          <td class="label">ACCOMPAGNATEURS:</td>
+          <td>{{ ordreMissionDetails.accompagnateurs }}</td>
+        </tr>
+      </table>
+
+      <div class="section-box">
+        <strong>DATE ET HEURE DE DEPART</strong><br>
+        Le {{ ordreMissionDetails.dateDepart }} &nbsp;&nbsp;&nbsp; à &nbsp;&nbsp;&nbsp; {{ ordreMissionDetails.heureDepart }}
+      </div>
+
+      <div class="section-box">
+        <strong>DATE ET HEURE D'ARRIVÉE</strong><br>
+        Le {{ ordreMissionDetails.dateArrivee }} &nbsp;&nbsp;&nbsp; à &nbsp;&nbsp;&nbsp; {{ ordreMissionDetails.heureArrivee }}
+      </div>
+
+    </body>
+    </html>
   </div>
   <!-- Étape 4 : Message de succès -->
   <div *ngIf="currentStep === 4">

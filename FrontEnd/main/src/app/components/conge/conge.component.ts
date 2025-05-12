@@ -85,13 +85,19 @@ export class AppCongeComponent {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-        console.log("haahahahahahaha",result);
+           result.startDate = this.toISOStringSafe(result.startDate);
+           result.endDate = this.toISOStringSafe(result.endDate);
         this.service.Add(result).subscribe({
           next: () => this.Load(),
           error: (err) => console.error('Erreur ajout :', err)
         });
       }
     });
+  }
+
+  toISOStringSafe(dateStr: string | Date): string | null {
+    const date = new Date(dateStr);
+    return isNaN(date.getTime()) ? null : date.toISOString();
   }
 
   

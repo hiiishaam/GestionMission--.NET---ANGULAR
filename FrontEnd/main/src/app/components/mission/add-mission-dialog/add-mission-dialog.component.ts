@@ -53,6 +53,22 @@ export class Add {
   vehicules: VehiculeDisponible[] = [];
   statusMission: StatusMission[] = [];
   teams : EmployeeDisponible[] = [];
+
+  ordreMissionDetails: OrdreMissionDetails = {
+    le: '',
+    nomPrenom: '',
+    fonction: '',
+    affectation: '',
+    destination: '',
+    motifDeplacement: '',
+    moyenDeTransport: '',
+    accompagnateurs: '',
+    dateDepart: '',
+    heureDepart: '',
+    dateArrivee: '',
+    heureArrivee: ''
+};
+
   constructor(
     public dialogRef: MatDialogRef<Add>,
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -170,7 +186,24 @@ export class Add {
   ProcessStep2()
   {
     this.MissionService.UpdateTeamsAndVehicule(this.data.data).subscribe({
-      next: () => this.currentStep++,
+      next: () => 
+      {
+         this.MissionService.getOrdreMissionDetails(this.data.data.id).subscribe({
+              next: (data) => {
+                if (data) {
+                this.ordreMissionDetails = data[0];  
+                this.currentStep++;
+                } else {
+                  console.warn('Aucune donnée reçue pour l’ordre de mission.');
+                }
+              },
+              error: (err) => {
+                console.error('Erreur lors de la récupération des détails:', err);
+              }
+            });
+      
+
+      },
       error: (err) => console.error('Erreur ajout :', err)
     });
   }

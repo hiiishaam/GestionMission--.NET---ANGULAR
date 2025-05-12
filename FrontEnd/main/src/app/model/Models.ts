@@ -130,17 +130,17 @@ export interface Employee {
 export interface Conge {
   id: number;
   reason: string;
-  startDate?: string; // Utiliser des chaînes de caractères pour les dates (format ISO)
-  endDate?: string;   // Utiliser des chaînes de caractères pour les dates (format ISO)
+  startDate?: String; 
+  endDate?: String;   
   employeeId?: number;
   employee?: Employee;
   actif: boolean;
-  updateDate: string | null;
-  createDate: string | null;
-  createdById: number | null;
-  createdBy: any | null;
-  updatedById: number | null;
-  updatedBy: any | null;
+  updateDate: string;
+  createDate: string;
+  createdById: number;
+  createdBy: any ;
+  updatedById: number;
+  updatedBy: any;
 }
 
   export interface OrdreMissionDetails {
