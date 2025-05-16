@@ -28,11 +28,11 @@
       <td mat-cell *matCellDef="let data"> {{ data.reason }} </td>
     </ng-container>
     <ng-container matColumnDef="StartDate">
-      <th mat-header-cell *matHeaderCellDef> StartDate </th>
+      <th mat-header-cell *matHeaderCellDef> Date Sortie</th>
       <td mat-cell *matCellDef="let data"> {{ data.startDate | date:'shortDate'}} </td>
     </ng-container>
     <ng-container matColumnDef="EndDate">
-      <th mat-header-cell *matHeaderCellDef> EndDate </th>
+      <th mat-header-cell *matHeaderCellDef> Date Entrer </th>
       <td mat-cell *matCellDef="let data"> {{ data.endDate | date:'shortDate'}} </td>
     </ng-container>
     <ng-container matColumnDef="employee">
@@ -40,7 +40,7 @@
       <td mat-cell *matCellDef="let data">  {{ data.employee.firstName }} {{ data.employee.lastName }}</td>
     </ng-container>
 
-    <ng-container matColumnDef="actif">
+   <ng-container matColumnDef="actif">
       <th mat-header-cell *matHeaderCellDef> Actif </th>
       <td mat-cell *matCellDef="let data">
         <mat-slide-toggle [(ngModel)]="data.actif" (change)="onActifChange(data)">

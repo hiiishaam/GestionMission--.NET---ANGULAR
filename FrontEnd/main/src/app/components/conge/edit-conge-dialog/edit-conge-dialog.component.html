@@ -6,6 +6,26 @@
     <input matInput [(ngModel)]="data.data.reason" placeholder="Entrez le nom">
   </mat-form-field>
 
+  <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date de début</mat-label>
+      <input matInput type="date" [(ngModel)]="data.data.startDate" name="startDate" required #start="ngModel">
+      <mat-error *ngIf="start.invalid && start.touched">Date de début requise</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Date de fin</mat-label>
+      <input matInput type="date" [(ngModel)]="data.data.endDate" name="endDate" required #end="ngModel">
+      <mat-error *ngIf="end.invalid && end.touched">Date de fin requise</mat-error>
+    </mat-form-field>
+
+    <!-- <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Employé</mat-label>
+      <mat-select [(ngModel)]="data.data.employeeId" name="employeeId" required #employee="ngModel">
+        <mat-option *ngFor="let emp of data.employees" [value]="emp.id">
+          {{ emp.firstName }} {{ emp.lastName }}
+        </mat-option>
+      </mat-select> -->
+
   <mat-dialog-actions>
     <button mat-raised-button color="primary" (click)="save()">Enregistrer</button>
     <button mat-raised-button color="warn" (click)="onCancel()">Annuler</button>

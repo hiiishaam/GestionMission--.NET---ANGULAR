@@ -85,8 +85,8 @@ export class AppCongeComponent {
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
-           result.startDate = this.toISOStringSafe(result.startDate);
-           result.endDate = this.toISOStringSafe(result.endDate);
+          //  result.startDate = this.toISOStringSafe(result.startDate);
+          //  result.endDate = this.toISOStringSafe(result.endDate);
         this.service.Add(result).subscribe({
           next: () => this.Load(),
           error: (err) => console.error('Erreur ajout :', err)
@@ -95,10 +95,10 @@ export class AppCongeComponent {
     });
   }
 
-  toISOStringSafe(dateStr: string | Date): string | null {
-    const date = new Date(dateStr);
-    return isNaN(date.getTime()) ? null : date.toISOString();
-  }
+  // toISOStringSafe(dateStr: string | Date): string | null {
+  //   const date = new Date(dateStr);
+  //   return isNaN(date.getTime()) ? null : date.toISOString();
+  // }
 
   
   // Méthode pour ouvrir le dialog d'édition
@@ -133,6 +133,7 @@ export class AppCongeComponent {
         }
       });
     }
+    
   onActifChange(data: Conge): void {
     this.service.Update(data).subscribe({
       next: () => this.Load(),

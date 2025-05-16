@@ -15,6 +15,13 @@
     <br/>
     <br/>
     <mat-form-field appearance="outline" class="full-width">
+      <mat-label>villeArrive de la mission</mat-label>
+      <textarea matInput [(ngModel)]="data.data.villeArrive" [disabled]="isReadOnly" required #end="ngModel" placeholder="Entrez le destination"></textarea>
+      <mat-error *ngIf="end.invalid && end.touched">La villeArrive est obligatoire.</mat-error>
+    </mat-form-field>
+    <br/>
+    <br/>
+    <mat-form-field appearance="outline" class="full-width">
       <mat-label>Employé concerné</mat-label>
       <mat-select [(ngModel)]="data.data.employeId" [disabled]="isReadOnly" required #employe="ngModel">
         <mat-option *ngFor="let emp of employes" [value]="emp.id">
@@ -75,6 +82,7 @@
             #timeRetour="ngModel" />
       <mat-error *ngIf="timeRetour.invalid && timeRetour.touched">L'heure de retour est requise.</mat-error>
     </mat-form-field>
+    <br/>
 
   </div>
 
@@ -120,6 +128,9 @@
       </mat-select>
       <mat-error *ngIf="vehicle.invalid && vehicle.touched">Veuillez sélectionner un véhicule.</mat-error>
     </mat-form-field>
+       <br/>   <br/>
+
+
   </div>
 
   <!-- Étape 3 : Récapitulatif -->

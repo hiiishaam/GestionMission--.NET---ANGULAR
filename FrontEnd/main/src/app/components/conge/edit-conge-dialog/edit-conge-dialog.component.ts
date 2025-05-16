@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import {Affectation, Conge} from '../../../model/Models'
+import { MatSelectModule } from '@angular/material/select';
 @Component({
   selector: 'app-edit-conge-dialog',
   standalone: true,
@@ -16,6 +17,7 @@ import {Affectation, Conge} from '../../../model/Models'
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+     MatSelectModule,
     MatDialogModule 
   ],
   templateUrl: './edit-conge-dialog.component.html'

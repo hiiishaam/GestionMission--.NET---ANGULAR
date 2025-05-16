@@ -2,6 +2,7 @@
 using GestionMission.Interfaces;
 using GestionMission.Model;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 
 namespace GestionMission.Controllers
 {
@@ -87,8 +88,9 @@ namespace GestionMission.Controllers
                     StatutId = dto.StatutId,
                     UpdatedById = dto.UpdatedById,
                     CreatedById = dto.CreatedById,
-                    VilleArrive = string.Empty,
-                    VilleDepart = string.Empty
+                    //VilleArrive = string.Empty,
+                    VilleDepart = string.Empty,
+                    VilleArrive = dto.villeArrive
                 };
 
                 var createdMission = _service.Add(mission);

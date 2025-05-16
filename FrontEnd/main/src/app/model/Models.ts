@@ -127,21 +127,19 @@ export interface Employee {
     updatedById: number;
   }
 
-export interface Conge {
-  id: number;
-  reason: string;
-  startDate?: String; 
-  endDate?: String;   
-  employeeId?: number;
-  employee?: Employee;
-  actif: boolean;
-  updateDate: string;
-  createDate: string;
-  createdById: number;
-  createdBy: any ;
-  updatedById: number;
-  updatedBy: any;
-}
+  export interface Conge {
+    id: number;
+    reason: string;
+    startDate?: Date; 
+    endDate?: Date;   
+    employeeId?: number;
+    employee?: Employee;
+    actif: boolean;
+    createdById:number;
+    createdBy:string;
+    updatedById:number;
+    updatedBy:string;
+  }
 
   export interface OrdreMissionDetails {
     le: string;

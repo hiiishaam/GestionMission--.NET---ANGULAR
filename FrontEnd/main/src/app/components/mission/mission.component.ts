@@ -39,7 +39,7 @@ import { View } from './view-mission-dialog/view-mission-dialog.component';
   templateUrl: './mission.component.html'
 })
 export class AppMissionComponent {
-  displayedColumns: string[] = ['id', 'description', 'depart', 'destination', 'dateDepart', 'dateRetour', 'actions'];
+  displayedColumns: string[] = ['id', 'description','destination', 'dateDepart', 'dateRetour', 'actions'];
   data: Mission[] = [];
   dataSource = new MatTableDataSource<Mission>();
 

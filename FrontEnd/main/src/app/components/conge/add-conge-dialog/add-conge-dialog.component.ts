@@ -23,7 +23,6 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatInputModule,
     MatButtonModule,
     MatDialogModule,
-    MatSelectModule,
     MatDialogModule,
     MatSelectModule,
     ReactiveFormsModule,

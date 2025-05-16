@@ -324,7 +324,6 @@ private parseISOStringToLocalDateAndTime(isoString?: string): { date?: Date ; ti
     const userId = this.authService.getUser().id;
     missionToAdd.createdById = userId;
     missionToAdd.updatedById = userId;
-   console.log("my data :",missionToAdd);
     return this.http.post<Mission>(this.apiUrl, missionToAdd);
   }
 
@@ -690,7 +689,7 @@ export class CongeService {
         conges.map(e => ({
           id: e.id,
           reason: e.reason,
-          startDate: e.StartDate,
+          startDate: e.startDate,
           endDate: e.endDate,
           employeeId: e.employeeId,
           employee: e.employee,
@@ -708,11 +707,8 @@ export class CongeService {
   Add(conge: Conge): Observable<Conge> {
     console.log('ici Service', conge );
     const userId = this.authService.getUser().id;
-    const now = new Date().toISOString(); 
     conge.createdById = userId;
     conge.updatedById = userId;
-    conge.createDate = now;
-    conge.updateDate = now;
    return this.http.post<Conge>(this.apiUrl, conge);
   }
 
