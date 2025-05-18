@@ -1,5 +1,6 @@
 ﻿using GestionMission.Entities;
 using GestionMission.Interfaces;
+using GestionMission.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
@@ -43,27 +44,62 @@ namespace GestionMission.Controllers
             }
             return Ok(conges);
         }
-     
-        [HttpPost]
-        public ActionResult<Conge> Create([FromBody] Conge conge)
+
+        /// <summary>
+        /// CheckCreate
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="congeDto"></param>
+        /// <returns></returns>
+        [HttpPost("check-disponibilite/{id}")]
+        public ActionResult<CheckEmployeeDisponibilite> CheckCreate(int? id, [FromBody] CongeDto congeDto)
         {
-            if (conge == null)
+            bool isBusy = _service.IsEmployeeDisponible(
+                congeDto.EmployeeId,
+                id,
+                DateTime.Parse(congeDto.DateDebutString),
+                DateTime.Parse(congeDto.DateFinString)
+            );
+
+            return Ok(new CheckEmployeeDisponibilite { IsBusy = isBusy });
+        }
+
+        [HttpPost]
+        public ActionResult<Conge> Create([FromBody] CongeDto congeDto)
+        {
+            if (congeDto == null)
             {
                 return BadRequest("Invalid data.");
             }
-
+            Conge conge = new Conge
+            {
+                EmployeeId = congeDto.EmployeeId,
+                Reason = congeDto.Reason,
+                Actif = congeDto.Actif,
+                CreatedById = congeDto.CreatedById,
+                UpdatedById = congeDto.UpdatedById,
+                StartDate = DateTime.Parse(congeDto.DateDebutString),
+                EndDate = DateTime.Parse(congeDto.DateFinString)
+            };
             var createdConge = _service.Add(conge);
             return CreatedAtAction(nameof(GetById), new { id = createdConge.Id }, createdConge);
         }
 
         [HttpPut("{id}")]
-        public ActionResult<Conge> Update(int id, [FromBody] Conge conge)
+        public ActionResult<Conge> Update(int id, [FromBody] CongeDto congeDto)
         {
-            if (conge == null)
+            if (congeDto == null)
             {
                 return BadRequest("Invalid data.");
             }
-
+            Conge conge = new Conge
+            {
+                Reason = congeDto.Reason,
+                Actif = congeDto.Actif,
+                UpdatedById = congeDto.UpdatedById,
+                StartDate = DateTime.Parse(congeDto.DateDebutString),
+                EndDate = DateTime.Parse(congeDto.DateFinString)
+            };
             var updatedConge = _service.Update(conge, id);
             if (updatedConge == null)
             {

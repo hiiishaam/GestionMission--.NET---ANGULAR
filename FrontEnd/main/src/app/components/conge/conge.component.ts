@@ -66,8 +66,8 @@ export class AppCongeComponent {
 
   // Récupérer les employés via le service EmployeeService
   this.serviceEmployee.Get().subscribe(data => {
-    this.employees = data; // Assigner les employés récupérés à la variable 'employees'
-    console.log('Employés récupérés :', data); // Affichage dans la console
+    this.employees = data.filter(e => e.actif);; // Assigner les employés récupérés à la variable 'employees'
+    console.log('Employés récupérés :', this.employees); // Affichage dans la console
   });
 }
 
@@ -134,12 +134,36 @@ export class AppCongeComponent {
       });
     }
     
-  onActifChange(data: Conge): void {
+  ProcessActifChange(data: Conge): void {
     this.service.Update(data).subscribe({
       next: () => this.Load(),
       error: (err) => console.error('Erreur changement actif :', err)
     });
   }
+
+  onActifChange(data: Conge): void {
+    if(data.actif)
+    {
+    this.service.CheckEmployeeDisponibilite(data).subscribe(isBusy => {
+    if (isBusy) {
+    alert(
+          "Cet employé est déjà occupé pendant cette période.\n\n" +
+          "Vérifiez s'il n'est pas :\n" +
+          "• en congé actif,\n" +
+          "• employeur d'une mission en cours ou validée,\n" +
+          "• membre d'équipe d'une mission en cours ou validée."
+        );
+        data.actif = !data.actif;
+      } else {
+          this.ProcessActifChange(data);
+      }
+    });
+    }
+    else{
+      this.ProcessActifChange(data);
+    }
+  }
+
   applyFilter(event: Event): void {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();

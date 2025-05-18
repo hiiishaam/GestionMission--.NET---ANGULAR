@@ -19,7 +19,7 @@ namespace GestionMission.Entities
         public DateTime? DateDebut { get; set; }
         [Required]
         public DateTime? DateFin { get; set; }
-        public int EmployerId { get; set; }
+        public int? EmployerId { get; set; }
         public Employee? Employer { get; set; }
         public int? VehiculeId { get; set; }
         public Vehicule? Vehicule { get; set; }

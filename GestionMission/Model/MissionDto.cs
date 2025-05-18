@@ -12,5 +12,4 @@
         public int CreatedById { get; set; }
         public int UpdatedById { get; set; }
     }
-
 }

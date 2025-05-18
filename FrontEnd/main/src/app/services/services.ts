@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { Observable, map,throwError } from 'rxjs';
-import { Employee,VehiculeDisponible,EmployeeDisponible,OrdreMissionDetails, Fonction,UpdateMission, Affectation, Vehicule, Mission, Paiement,StatusMission ,User, Conge} from '../model/Models';
+import {Team, Employee,VehiculeDisponible,EmployeeDisponible,OrdreMissionDetails, Fonction,UpdateMission,UpdateMissionStatus,VisibleButton, Affectation, Vehicule, Mission, Paiement,StatusMission ,User, Conge} from '../model/Models';
 import {environment } from '../environments/environment';
 import {jsPDF} from 'jspdf';
 
@@ -221,7 +221,22 @@ export class VehiculeService {
 @Injectable({ providedIn: 'root' })
 export class MissionService {
   private apiUrl = environment.apiUrl + '/Mission';
-  constructor(private http: HttpClient, private authService: AuthService) {}
+  private apiUrlStatut = environment.apiUrl + '/Statut';
+  public status:StatusMission[] ;
+
+  private VisibleButtton : Record<string,VisibleButton> = { 
+    'Valide':  {delete:false, update:false,view:true,close:true,cancel:true } as VisibleButton,
+    'EnCours': {delete:true, update:true,view:false,close:false,cancel:true }  as VisibleButton,
+    'Cloture': {delete:false, update:false,view:true,close:false,cancel:false }  as VisibleButton,
+    'Annule': {delete:false, update:false,view:true,close:false,cancel:false }  as VisibleButton,
+    'default': {delete:false, update:false,view:false,close:false,cancel:false }  as VisibleButton
+  };
+  constructor(private http: HttpClient, private authService: AuthService) {
+    this.GetStatus().subscribe(data => {
+      this.status = data;
+       console.log('Status récupérées :', data);
+    });
+  }
 
   getOrdreMissionDetails(missionId: number): Observable<OrdreMissionDetails[]> {
       return this.http.get<OrdreMissionDetails[]>(`${this.apiUrl}/ordre-mission-details/${missionId}`);
@@ -234,12 +249,16 @@ export class MissionService {
   getVehiculesDisponibles(missionId: number): Observable<VehiculeDisponible[]> {
     return this.http.get<VehiculeDisponible[]>(`${this.apiUrl}/vehicules-disponibles/${missionId}`);
   }
+
   Get(): Observable<Mission[]> {
   return this.http.get<any[]>(this.apiUrl).pipe(
     map(missions =>
-      missions.map(mission => {
+      missions
+      .sort((a, b) => b.id - a.id)
+      .map(mission => {
         const { date: dateDepart, time: heureDepart } = this.parseISOStringToLocalDateAndTime(mission.dateDebut);
         const { date: dateRetour, time: heureRetour } = this.parseISOStringToLocalDateAndTime(mission.dateFin);
+        var status = this.status.find(e => e.id == mission.statutId);
         return {
           id: mission.id,
           name: mission.name,
@@ -251,7 +270,10 @@ export class MissionService {
           vehiculeId: mission.vehiculeId,
           vehiculeName: mission.vehicule?.name,
           statutId: mission.statutId,
-          destination: mission.villeArrive,
+          villeArrive: mission.villeArrive,
+          status:status?.name,
+          progress:status?.progress,
+          commentaire:status?.commentaire,
           dateDepart : dateDepart,
           heureDepart : heureDepart,
           dateRetour : dateRetour,
@@ -261,7 +283,8 @@ export class MissionService {
           createdById: mission.createdById,
           createdBy: mission.createdBy,
           updatedById: mission.updatedById,
-          updatedBy: mission.updatedBy
+          updatedBy: mission.updatedBy,
+          visibleButton : status != null ? this.VisibleButtton[status.code] :this.VisibleButtton["default"] 
         };
       })
     )
@@ -273,18 +296,50 @@ export class MissionService {
       employeIds: updated.teamIds,
       vehiculeId: updated.vehiculeId,
       createdById: updated.createdById,
-      updatedById: updated.updatedById
+      updatedById: updated.updatedById,
+      employeId : updated.employeId
     };
     return this.http.put<Mission>(`${this.apiUrl}/${updated.id}`, updatemission);
   }
 
-  GetStatus(): Observable<StatusMission[]> {
-    return this.http.get<any[]>(this.apiUrl).pipe(
+  UpdateStatus(updated: Mission): Observable<Mission>{
+    const userId = this.authService.getUser().id;
+    const updatemission: UpdateMissionStatus = {
+      statutId: updated.statutId,
+      updatedById: userId
+    };
+    return this.http.put<Mission>(`${this.apiUrl}/UpdateStatus/${updated.id}`, updatemission);
+  }
+
+  Add(mission: Mission): Observable<Mission> {
+    let missionToAdd = mission;
+    missionToAdd.dateDepartString = this.formatDateToISOString(mission.dateDepart, mission.heureDepart);
+    missionToAdd.dateRetourString = this.formatDateToISOString(mission.dateRetour, mission.heureRetour);
+    const userId = this.authService.getUser().id;
+    missionToAdd.createdById = userId;
+    missionToAdd.updatedById = userId;
+    missionToAdd.statutId = this.status.find(e => e.code = "EnCours")?.id;
+    return this.http.post<Mission>(this.apiUrl, missionToAdd);
+  }
+
+  Update(updated: Mission): Observable<Mission> {
+    updated.statutId = this.status.find(e => e.name = "En cours")?.id;
+    return this.http.put<Mission>(`${this.apiUrl}/${updated.id}`, updated);
+  }
+
+  Delete(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  private GetStatus(): Observable<StatusMission[]> {
+    return this.http.get<any[]>(this.apiUrlStatut).pipe(
       map(statusList =>
         statusList.map(s => ({
           id: s.id,
           name: s.name,
-          code:s.code
+          code:s.code,
+          progress :s.progress,
+          commentaire:s.commentaire
         } as StatusMission))
       )
     );
@@ -304,42 +359,18 @@ export class MissionService {
   }
   return date.toISOString();
 
-}
-private parseISOStringToLocalDateAndTime(isoString?: string): { date?: Date ; time: string } {
-  if (!isoString) return { date: undefined, time: '' };
-  const date = new Date(isoString);
-  if (isNaN(date.getTime())) return { date: undefined, time: '' };
-  const hours = String(date.getHours()).padStart(2, '0');
-  const minutes = String(date.getMinutes()).padStart(2, '0');
-  return {
-    date: date, 
-    time: `${hours}:${minutes}` 
-  };
-}
-
-  Add(mission: Mission): Observable<Mission> {
-    let missionToAdd = mission;
-    missionToAdd.dateDepartString = this.formatDateToISOString(mission.dateDepart, mission.heureDepart);
-    missionToAdd.dateRetourString = this.formatDateToISOString(mission.dateRetour, mission.heureRetour);
-    const userId = this.authService.getUser().id;
-    missionToAdd.createdById = userId;
-    missionToAdd.updatedById = userId;
-    return this.http.post<Mission>(this.apiUrl, missionToAdd);
   }
 
-  Update(updated: Mission): Observable<Mission> {
-    return this.http.put<Mission>(`${this.apiUrl}/${updated.id}`, updated);
-  }
-  
-  Delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
-
-  formatDate(dateStr: string): string {
-    if(!dateStr)
-      return '';
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('fr-FR');
+  private parseISOStringToLocalDateAndTime(isoString?: string): { date?: Date ; time: string } {
+    if (!isoString) return { date: undefined, time: '' };
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return { date: undefined, time: '' };
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return {
+      date: date, 
+      time: `${hours}:${minutes}` 
+    };
   }
 }
 
@@ -638,7 +669,7 @@ export class PdfService {
     this.getImageAsBase64('../assets/header-cadetaf.png').subscribe(
       (base64) => {
         this.headerImg = base64;
-        console.log('Header Image Base64:', this.headerImg);
+       // console.log('Header Image Base64:', this.headerImg);
       },
       (error) => console.error('Erreur de chargement de l\'image :', error)
     );
@@ -647,7 +678,7 @@ export class PdfService {
     this.getImageAsBase64('../assets/footer-cadetaf.png').subscribe(
       (base64) => {
         this.footerImg = base64;
-        console.log('Footer Image Base64:', this.footerImg);
+       // console.log('Footer Image Base64:', this.footerImg);
       },
       (error) => console.error('Erreur de chargement de l\'image :', error)
     );
@@ -656,41 +687,42 @@ export class PdfService {
     this.getImageAsBase64('../assets/ordre-mission.png').subscribe(
       (base64) => {
         this.missionImg = base64;
-        console.log('ordre Image Base64:', this.missionImg);
+        //console.log('ordre Image Base64:', this.missionImg);
       },
       (error) => console.error('Erreur de chargement de l\'image :', error)
     );
   }
-
-
-  // GetMission(id:number): Observable<Mission[]> {
-  //   return this.http.get<any[]>(this.apiUrl).pipe(
-  //     map(todos =>
-  //       todos.map(todo => ({
-  //         id: todo.id,
-  //         name: todo.title,
-  //         description: 'Description automatique'
-  //       }))
-  //     )
-  //   );
-  // }
 }
-
 
 @Injectable({ providedIn: 'root' })
 export class CongeService {
   private apiUrl = environment.apiUrl +'/Conge';
   
-  constructor(private http: HttpClient, private serviceEmp : EmployeeService , private authService: AuthService) {}
-  
-  Get(): Observable<Conge[]> {
+  constructor(private http: HttpClient, private authService: AuthService) {}
+ private formatDateToISOString(date?: Date): string {
+      if (!date) return '';
+      return date.toDateString();
+  }
+ private parseISOStringToLocalDateAndTime(isoString?: string): { date?: Date} {
+    if (!isoString) return { date: undefined };
+    const date = new Date(isoString);
+    if (isNaN(date.getTime())) return { date: undefined };
+    return {
+      date: date,
+    };
+  }
+    Get(): Observable<Conge[]> {
     return this.http.get<any[]>(this.apiUrl).pipe(
       map(conges =>
-        conges.map(e => ({
+        conges.map(
+		e => {
+		const { date: startDate} = this.parseISOStringToLocalDateAndTime(e.startDate);
+    const { date: endDate } = this.parseISOStringToLocalDateAndTime(e.endDate);
+		return {
           id: e.id,
           reason: e.reason,
-          startDate: e.startDate,
-          endDate: e.endDate,
+          startDate: startDate,
+          endDate: endDate,
           employeeId: e.employeeId,
           employee: e.employee,
           actif: e.actif,
@@ -700,24 +732,53 @@ export class CongeService {
           createdBy: e.createdBy,
           updatedById: e.updatedById,
           updatedBy: e.updatedBy
-        } as Conge))
-      )
+        } ;
+		}))
     );
   }
+ 
+  CheckEmployeeDisponibilite(conge: Conge): Observable<boolean> {
+  conge.dateDebutString = this.formatDateToISOString(conge.startDate);
+  conge.dateFinString = this.formatDateToISOString(conge.endDate);
+  return this.http.post<{ isBusy: boolean }>(
+    `${this.apiUrl}/check-disponibilite/${conge.id}`,
+      conge
+    ).pipe(
+      map(res => res.isBusy)
+    );
+  }
+
   Add(conge: Conge): Observable<Conge> {
-    console.log('ici Service', conge );
+    console.log('ici Service add', conge );
     const userId = this.authService.getUser().id;
     conge.createdById = userId;
     conge.updatedById = userId;
+    conge.dateDebutString = this.formatDateToISOString(conge.startDate);
+    conge.dateFinString = this.formatDateToISOString(conge.endDate);
    return this.http.post<Conge>(this.apiUrl, conge);
   }
-
   Update(conge: Conge): Observable<Conge> {
+    console.log('ici Service Update', conge );
     conge.updatedById = this.authService.getUser().id;
+    conge.dateDebutString = this.formatDateToISOString(conge.startDate);
+    conge.dateFinString = this.formatDateToISOString(conge.endDate);
     return this.http.put<Conge>(`${this.apiUrl}/${conge.id}`, conge);
   }
 
   Delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class TeamService {
+  private apiUrl = environment.apiUrl +'/Team';
+  
+  constructor(private http: HttpClient) {}
+
+  GetTeamIdsByMissionId(id: number): Observable<number[]> {
+  return this.http.get<Team[]>(`${this.apiUrl}/ByMission/${id}`).pipe(
+    map(teams => teams.map(e => e.employeeId))
+  );
   }
 }

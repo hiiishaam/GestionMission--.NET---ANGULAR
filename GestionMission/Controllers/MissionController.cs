@@ -2,7 +2,6 @@
 using GestionMission.Interfaces;
 using GestionMission.Model;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 
 namespace GestionMission.Controllers
 {
@@ -12,11 +11,20 @@ namespace GestionMission.Controllers
     {
         private readonly IMissionService _service;
         private readonly ITeamService _teamService;
-
-        public MissionController(IMissionService service, ITeamService teamService)
+        private readonly IStatutService _statutService;
+        private readonly IPaimentService _paimentService;
+        /// <summary>
+        /// MissionController
+        /// </summary>
+        /// <param name="service"></param>
+        /// <param name="teamService"></param>
+        /// <param name="statutService"></param>
+        public MissionController(IMissionService service, ITeamService teamService, IStatutService statutService, IPaimentService paimentService)
         {
             _service = service;
             _teamService = teamService;
+            _statutService = statutService;
+            _paimentService = paimentService;
         }
 
         [HttpGet]
@@ -83,12 +91,10 @@ namespace GestionMission.Controllers
 
                     DateDebut = DateTime.Parse(dto.DateDepartString),
                     DateFin = DateTime.Parse(dto.DateRetourString),
-                    EmployerId = dto.EmployeId,
                     VehiculeId = dto.VehiculeId,
                     StatutId = dto.StatutId,
                     UpdatedById = dto.UpdatedById,
                     CreatedById = dto.CreatedById,
-                    //VilleArrive = string.Empty,
                     VilleDepart = string.Empty,
                     VilleArrive = dto.villeArrive
                 };
@@ -108,14 +114,24 @@ namespace GestionMission.Controllers
             try
             {
                 var missiondb = _service.FindById(id);
-
+                bool update = false;
                 if (missiondb != null)
                 {
                     if(missiondb.VehiculeId != mission.VehiculeId)
                     {
                         missiondb.VehiculeId = mission.VehiculeId;
+                        update = true;
+                    }
+                    if (missiondb.EmployerId != mission.EmployeId)
+                    {
+                        missiondb.EmployerId = mission.EmployeId;
+                        update = true;
+                    }
+
+                    if(update)
+                    {
                         missiondb.UpdatedById = mission.UpdatedById;
-                        missiondb =   _service.Update(missiondb, id);
+                        missiondb = _service.Update(missiondb, id);
                     }
 
                     var teamlist = _teamService.FindByMissionId(id);
@@ -159,11 +175,55 @@ namespace GestionMission.Controllers
             }
         }
 
+        [HttpPut("UpdateStatus/{id}")]
+        public ActionResult<Mission> UpdateStatue(int id, [FromBody] MissionStatus mission)
+        {
+            try
+            {
+                var missiondb = _service.FindById(id);
+
+                if (missiondb != null && mission.StatutId.HasValue && missiondb.StatutId != mission.StatutId)
+                {
+                    missiondb.StatutId = mission.StatutId;
+                    missiondb.UpdatedById = mission.UpdatedById;
+                    missiondb = _service.Update(missiondb, id);
+                    var status = _statutService.FindAll();
+
+                    if (missiondb.StatutId == status.First(e => e.Code == "Cloture").Id)
+                    {
+                        Payment paiment = new Payment
+                        {
+                            CreatedById = mission.UpdatedById,
+                            UpdatedById = mission.UpdatedById,
+                            MissionId = missiondb.Id,
+                            
+                        };
+                        _paimentService.Add(paiment);
+                    }
+                }
+
+                if (missiondb == null)
+                    return NotFound();
+
+                return Ok(missiondb);
+            }
+            catch (Exception ex)
+            {
+
+                return StatusCode(500, "Une erreur interne est survenue. Veuillez réessayer plus tard.");
+            }
+        }
+
         [HttpDelete("{id}")]
         public ActionResult Delete(int id)
         {
             try
             {
+                var teamlist = _teamService.FindByMissionId(id);
+                if(teamlist != null && teamlist.Any())
+                {
+                    teamlist.ForEach(e => _teamService.Delete(e.Id));
+                }
                 var deletedMission = _service.Delete(id);
                 if (deletedMission == null)
                     return NotFound();

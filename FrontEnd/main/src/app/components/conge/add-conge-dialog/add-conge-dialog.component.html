@@ -1,45 +1,51 @@
 <h2 mat-dialog-title>Ajouter un congé</h2>
 <br/>
 <mat-dialog-content>
-  <mat-form-field appearance="outline" class="full-width">
-    <mat-label>reason</mat-label>
+  <mat-form-field appearance="outline" style="width: 90%;">
+    <mat-label>Raison</mat-label>
     <input matInput [(ngModel)]="data.data.reason" name="reason">
   </mat-form-field>
   <br/>
   <br/>
-  <mat-form-field appearance="outline" class="full-width">
+  <mat-form-field appearance="outline" style="width: 90%;">
     <mat-label>Date de début</mat-label>
-    <input matInput type="date" [(ngModel)]="data.data.startDate" required #start="ngModel">
-    <mat-error *ngIf="start.invalid && start.touched">La date de début est requise.</mat-error>
+    <input matInput [(ngModel)]="data.data.startDate"
+          [matDatepicker]="pickerDebut"
+          required
+          #retour="ngModel"
+          readonly />
+    <mat-datepicker-toggle matIconSuffix [for]="pickerDebut"></mat-datepicker-toggle>
+    <mat-datepicker #pickerDebut></mat-datepicker>
+    <mat-error *ngIf="retour.invalid && retour.touched">La date de début est requise.</mat-error>
   </mat-form-field>
   <br/>
   <br/>
-  <mat-form-field appearance="outline" class="full-width">
+  <mat-form-field appearance="outline" style="width: 90%;">
     <mat-label>Date de fin</mat-label>
-    <input matInput type="date" [(ngModel)]="data.data.endDate" required #end="ngModel" >
-    <mat-error *ngIf="end.invalid && end.touched">La date de fin est requise.</mat-error>
+    <input matInput [(ngModel)]="data.data.endDate"
+          [matDatepicker]="pickerFin"
+          required
+          #retour="ngModel"
+          readonly />
+    <mat-datepicker-toggle matIconSuffix [for]="pickerFin"></mat-datepicker-toggle>
+    <mat-datepicker #pickerFin></mat-datepicker>
+    <mat-error *ngIf="retour.invalid && retour.touched">La date de fin est requise.</mat-error>
   </mat-form-field>
   <br/>
   <br/>
-<mat-form-field appearance="outline" class="full-width">
-  <mat-label>Employé</mat-label>
-  <mat-select [(ngModel)]="data.data.employeeId" name="employeeId">
-    <mat-option *ngFor="let employee of data.employees" [value]="employee.id">
-      {{ employee.firstName }} {{ employee.lastName }}
-    </mat-option>
-  </mat-select>
-</mat-form-field>
-
-
-  <mat-form-field appearance="outline" class="full-width">
-    <mat-label>Actif</mat-label>
-    <mat-select [(ngModel)]="data.data.actif" name="actif">
-      <mat-option [value]="true">Oui</mat-option>
-      <mat-option [value]="false">Non</mat-option>
+  <mat-form-field appearance="outline"  style="width: 90%;">
+    <mat-label>Employé</mat-label>
+    <mat-select [(ngModel)]="data.data.employeeId" name="employeeId">
+      <mat-option *ngFor="let employee of data.employees" [value]="employee.id">
+        {{ employee.firstName }} {{ employee.lastName }}
+      </mat-option>
     </mat-select>
   </mat-form-field>
+  <div *ngIf="!isDateRangeValid()" class="text-danger" style="color: red;">
+    La date de début doit être antérieure ou égale à la date de fin.
+  </div>
 </mat-dialog-content>
 <mat-dialog-actions >
   <button mat-button (click)="onCancel()">Annuler</button>
-  <button mat-raised-button color="primary" (click)="save()">Ajouter</button>
+  <button mat-raised-button color="primary" [disabled]="!isStepValid()" (click)="save()">Ajouter</button>
 </mat-dialog-actions>

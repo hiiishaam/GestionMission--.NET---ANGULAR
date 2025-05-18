@@ -10,5 +10,6 @@ namespace GestionMission.Interfaces
         Conge Add(Conge conge);
         Conge Update(Conge conge, int id);
         Conge Delete(int id);
+        bool IsEmployeeDisponible(int employeeId, int? congeId, DateTime dateDebut, DateTime dateFin);
     }
 }

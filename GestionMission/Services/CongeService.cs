@@ -56,14 +56,34 @@ namespace GestionMission.Services
         //    return _db.conges.ToList();
         //}
 
+        /// <summary>
+        /// IsEmployeeDisponible
+        /// </summary>
+        /// <param name="employeeId"></param>
+        /// <param name="congeId"></param>
+        /// <param name="dateDebut"></param>
+        /// <param name="dateFin"></param>
+        /// <returns></returns>
+        public bool IsEmployeeDisponible(int employeeId,int? congeId, DateTime dateDebut, DateTime dateFin)
+        {
+            var isBusy = _db.Database
+                .SqlQueryRaw<int>(
+                    "EXEC CheckEmployeeDisponibilite @EmployeeId = {0}, @DateDebut = {1}, @DateFin = {2}, @CongeId = {3}",
+                    employeeId, dateDebut, dateFin, congeId.HasValue ? congeId.Value : (object)DBNull.Value)
+                .AsEnumerable()
+                .FirstOrDefault();
+
+            return isBusy == 1; // true = occupé , false = disponible
+        }
+
 
         public List<Conge> FindAll()
-             {
-             return _db.conges.Include(c => c.Employee).ToList();
-             }
+        {
+            return _db.conges.Include(c => c.Employee).ToList();
+        }
 
 
-    public List<Conge> FindByDateDebut(string date)
+        public List<Conge> FindByDateDebut(string date)
         {
             throw new NotImplementedException();
         }
@@ -82,9 +102,9 @@ namespace GestionMission.Services
                 existingConge.Reason = conge.Reason;
                 existingConge.StartDate = conge.StartDate;
                 existingConge.EndDate = conge.EndDate;
-                existingConge.EmployeeId = conge.EmployeeId;
+                existingConge.Actif = conge.Actif;
                 existingConge.UpdateDate = DateTime.UtcNow;
-
+                existingConge.UpdatedById = conge.UpdatedById;
                 _db.SaveChanges();
             }
             return existingConge;

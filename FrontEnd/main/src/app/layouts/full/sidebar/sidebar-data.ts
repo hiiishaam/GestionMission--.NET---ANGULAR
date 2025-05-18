@@ -6,7 +6,7 @@ export const navItems: NavItem[] = [
   },
   {
     displayName: 'Dashboard',
-    iconName: 'solar:atom-line-duotone',
+    iconName: 'solar:chart-2-line-duotone',
     route: '/dashboard',
   },
   {
@@ -15,12 +15,12 @@ export const navItems: NavItem[] = [
   },
   {
     displayName: 'Mission',
-    iconName: 'solar:file-text-line-duotone',
+    iconName: 'solar:checklist-minimalistic-broken',
     route: '/ui-components/mission',
   },
   {
     displayName: 'Paiement',
-    iconName: 'solar:file-text-line-duotone',
+    iconName: 'solar:dollar-line-duotone',
     route: '/ui-components/paiement',
   },
   {
@@ -28,28 +28,28 @@ export const navItems: NavItem[] = [
     divider: true
   },
   {
-    displayName: 'Employee',
-    iconName: 'solar:file-text-line-duotone',
+    displayName: 'Employé',
+    iconName: 'solar:users-group-rounded-bold-duotone',
     route: '/ui-components/employee',
   },
   {
     displayName: 'Affectation',
-    iconName: 'solar:file-text-line-duotone',
+    iconName: 'solar:globus-line-duotone',
     route: '/ui-components/affectation',
   },
   {
     displayName: 'Fonction',
-    iconName: 'solar:file-text-line-duotone',
+    iconName: 'solar:user-id-bold-duotone',
     route: '/ui-components/fonction',
   },
   {
     displayName: 'Vehicule',
-    iconName: 'solar:file-text-line-duotone',
+    iconName: 'solar:bus-bold-duotone',
     route: '/ui-components/vehicule',
   } ,
   {
-    displayName: 'Conge',
-    iconName: 'solar:file-text-line-duotone',
+    displayName: 'Congé',
+    iconName: 'solar:calendar-date-bold-duotone',
     route: '/ui-components/conge',
   } 
 ];

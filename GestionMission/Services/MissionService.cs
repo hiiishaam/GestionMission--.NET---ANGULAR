@@ -48,10 +48,10 @@ namespace GestionMission.Services
                 {
                     mission.Employer = employer;
                 }
-                else
-                {
-                    throw new ArgumentException("L'employé spécifié n'existe pas.", nameof(mission.EmployerId));
-                }
+                //else
+                //{
+                //    throw new ArgumentException("L'employé spécifié n'existe pas.", nameof(mission.EmployerId));
+                //}
 
                 // Vérifier et attacher le Véhicule (facultatif)
                 if (mission.VehiculeId.HasValue)

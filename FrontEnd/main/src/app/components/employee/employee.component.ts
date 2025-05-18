@@ -64,12 +64,12 @@ export class AppEmployeeComponent {
     });
        // Récupérer les fonctions via le service FonctionService
     this.serviceFonction.Get().subscribe(data => {
-      this.fonctions = data; // Assigner les fonctions récupérées à la variable 'fonctions'
+      this.fonctions = data.filter(e => e.actif); // Assigner les fonctions récupérées à la variable 'fonctions'
       console.log('Fonctions récupérées :', data); // Affichage dans la console
     });
 
     this.serviceAffectation.Get().subscribe(data => {
-      this.affectations = data; // Assigner les affectations récupérées à la variable 'affectations'
+      this.affectations = data.filter(e => e.actif); // Assigner les affectations récupérées à la variable 'affectations'
       console.log('Affectations récupérées :', data); // Affichage dans la console
     });
   }

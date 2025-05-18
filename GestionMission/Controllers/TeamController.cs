@@ -36,6 +36,16 @@ namespace GestionMission.Controllers
             return Ok(team);
         }
 
+        [HttpGet("ByMission/{id}")]
+        public ActionResult<Team> GetTeamsByMissionId(int id)
+        {
+            var team = _teamService.FindByMissionId(id);
+            if (team == null)
+            {
+                return NotFound();
+            }
+            return Ok(team);
+        }
         // POST: api/team
         [HttpPost]
         public ActionResult<Team> CreateTeam([FromBody] Team team)

@@ -7,28 +7,17 @@
     <h3>Informations générales</h3>
     <br/>
     <br/>
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" style="width: 90%;">
       <mat-label>Raison de la mission</mat-label>
       <textarea matInput [(ngModel)]="data.data.description" [disabled]="isReadOnly" required #end="ngModel" placeholder="Entrez le motif de deplacement"></textarea>
       <mat-error *ngIf="end.invalid && end.touched">La raison est obligatoire.</mat-error>
     </mat-form-field>
     <br/>
     <br/>
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>villeArrive de la mission</mat-label>
+    <mat-form-field appearance="outline" style="width: 90%;">
+      <mat-label>Destination</mat-label>
       <textarea matInput [(ngModel)]="data.data.villeArrive" [disabled]="isReadOnly" required #end="ngModel" placeholder="Entrez le destination"></textarea>
-      <mat-error *ngIf="end.invalid && end.touched">La villeArrive est obligatoire.</mat-error>
-    </mat-form-field>
-    <br/>
-    <br/>
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Employé concerné</mat-label>
-      <mat-select [(ngModel)]="data.data.employeId" [disabled]="isReadOnly" required #employe="ngModel">
-        <mat-option *ngFor="let emp of employes" [value]="emp.id">
-          {{emp.firstName + " " + emp.lastName }}
-        </mat-option>
-      </mat-select>
-      <mat-error *ngIf="employe.invalid && employe.touched">Veuillez sélectionner un employé.</mat-error>
+      <mat-error *ngIf="end.invalid && end.touched">La destination est obligatoire.</mat-error>
     </mat-form-field>
     <br/>
     <br/>
@@ -83,26 +72,38 @@
       <mat-error *ngIf="timeRetour.invalid && timeRetour.touched">L'heure de retour est requise.</mat-error>
     </mat-form-field>
     <br/>
-
+    <div *ngIf="!isDateRangeValid()" class="text-danger" style="color: red;">
+      La date de départ doit être antérieure ou égale à la date de retour.
+    </div>
   </div>
-
   <!-- Étape 2 : Sélection des membres de l'équipe -->
   <div *ngIf="currentStep === 2">
     <h3>Détail de la mission</h3>
     <br/>
     <br/>
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Employé concerné</mat-label>
+      <mat-select [(ngModel)]="data.data.employeId" required #employe="ngModel" (selectionChange)="onEmployeChange()">
+        <mat-option *ngFor="let emp of allEmployees" [value]="emp.employeeId">
+          {{emp.firstName + " " + emp.lastName }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="employe.invalid && employe.touched">Veuillez sélectionner un employé.</mat-error>
+    </mat-form-field>
+    <br/>
+    <br/>
     <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
-
       <!-- Sélectionner les employés pour l'équipe -->
       <div style="width: 60%; padding-right: 20px;">
         <mat-form-field appearance="outline" class="full-width" style="flex-grow: 1;">
           <mat-label>Sélectionner les membres de l'équipe</mat-label>
-          <mat-select [(ngModel)]="data.data.teamIds" multiple required #team="ngModel">
+          <!--  <mat-select [(ngModel)]="data.data.teamIds" multiple required #team="ngModel"> -->
+          <mat-select [(ngModel)]="data.data.teamIds" multiple>
             <mat-option *ngFor="let emp of teams" [value]="emp.employeeId">
               {{ emp.firstName + " "+ emp.lastName }}
             </mat-option>
           </mat-select>
-          <mat-error *ngIf="team.invalid && team.touched">Veuillez sélectionner des membres de l'équipe.</mat-error>
+          <!--  <mat-error *ngIf="team.invalid && team.touched">Veuillez sélectionner des membres de l'équipe.</mat-error> -->
         </mat-form-field>
       </div>
 
@@ -115,20 +116,22 @@
           </li>
         </ul>
       </div>
-    </div>
-    <!-- Sélectionner un véhicule pour la mission (uniquement un) -->
-    <br/>
-    <br/>
-    <mat-form-field appearance="outline" class="full-width" style="flex-grow: 1;">
-      <mat-label>Sélectionner un véhicule</mat-label>
-      <mat-select [(ngModel)]="data.data.vehiculeId" required #vehicle="ngModel">
-        <mat-option *ngFor="let vehicule of vehicules" [value]="vehicule.vehiculeId">
-          {{ vehicule.vehiculeName }}
-        </mat-option>
-      </mat-select>
-      <mat-error *ngIf="vehicle.invalid && vehicle.touched">Veuillez sélectionner un véhicule.</mat-error>
-    </mat-form-field>
-       <br/>   <br/>
+      </div>
+      <!-- Sélectionner un véhicule pour la mission (uniquement un) -->
+      <br/>
+      <br/>
+      <mat-form-field appearance="outline" class="full-width" style="flex-grow: 1;">
+        <mat-label>Sélectionner un véhicule</mat-label>
+       <!-- <mat-select [(ngModel)]="data.data.vehiculeId" required #vehicle="ngModel">-->
+        <mat-select [(ngModel)]="data.data.vehiculeId">
+          <mat-option *ngFor="let vehicule of vehicules" [value]="vehicule.vehiculeId">
+            {{ vehicule.vehiculeName }}
+          </mat-option>
+        </mat-select>
+        <!--  <mat-error *ngIf="vehicle.invalid && vehicle.touched">Veuillez sélectionner un véhicule.</mat-error> -->
+      </mat-form-field>
+      <br/>   
+      <br/>
 
 
   </div>
@@ -235,14 +238,13 @@
     <p style="text-align: center;">Vous pouvez maintenant imprimer les détails ou consulter la liste des missions.</p>
     <div style="display: flex; justify-content: center; gap: 16px; margin-top: 20px;">
       <button mat-raised-button color="primary" (click)="printMission()">🖨️ Imprimer</button>
-      <button mat-button color="accent" (click)="redirectToConsultation()">🔍 Consulter les missions</button>
+      <button mat-button color="accent" (click)="Close()">Fermer</button>
     </div>
   </div>
 </mat-dialog-content>
-
 <mat-dialog-actions>
-  <button mat-button *ngIf="currentStep < 3 " (click)="onCancel()">Annuler</button>
+  <button mat-button *ngIf="currentStep <= 3 " (click)="onCancel()">Annuler</button>
   <button mat-button *ngIf="currentStep > 1 && currentStep < 4" (click)="previousStep()">Précédent</button>
   <button mat-button *ngIf="currentStep < 3 " [disabled]="!isStepValid()" (click)="nextStep()">Suivant</button>
-  <button mat-raised-button color="accent" *ngIf="currentStep === 3" (click)="submitMission()">Valider et créer la mission</button>
+  <button mat-raised-button color="accent" *ngIf="currentStep === 3" (click)="submitMission()">Valider</button>
 </mat-dialog-actions>

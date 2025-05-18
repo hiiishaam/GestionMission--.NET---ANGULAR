@@ -63,8 +63,7 @@ namespace GestionMission.Helpers
             {
                 EmployeeId = s.EmployeeId,
                 FirstName = string.IsNullOrWhiteSpace(s.FirstName) ? string.Empty : s.FirstName,
-                LastName = string.IsNullOrWhiteSpace(s.LastName) ? string.Empty : s.LastName,
-                EstAffecteAMission = s.EstAffecteAMission.HasValue ? s.EstAffecteAMission.Value == 1: false,
+                LastName = string.IsNullOrWhiteSpace(s.LastName) ? string.Empty : s.LastName
             }).ToList();
         }
 

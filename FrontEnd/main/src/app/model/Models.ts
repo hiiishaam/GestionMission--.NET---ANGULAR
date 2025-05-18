@@ -74,7 +74,10 @@ export interface Employee {
     vehiculeId?:number;
     vehiculeName?:string;
     statutId?:number;
-    destination?: string;
+    status?:string;
+    progress?:string;
+    commentaire?:string;
+    villeArrive?: string;
     heureDepart? : string;
     heureRetour? : string;
     dateDepart?: Date;
@@ -87,6 +90,7 @@ export interface Employee {
     createdBy:string;
     updatedById:number;
     updatedBy:string;
+    visibleButton?: VisibleButton
   }
 
   export interface Paiement {
@@ -100,6 +104,8 @@ export interface Employee {
     id: number;
     name: string;
     code:string;
+    progress:string;
+    commentaire:string;
   }
 
   // export interface User{
@@ -125,13 +131,20 @@ export interface Employee {
     vehiculeId?: number;
     createdById: number;
     updatedById: number;
+    employeId?: number;
+  }
+   export interface UpdateMissionStatus {
+    statutId?: number;
+    updatedById: number;
   }
 
   export interface Conge {
     id: number;
     reason: string;
     startDate?: Date; 
-    endDate?: Date;   
+    endDate?: Date; 
+    dateDebutString?: string;
+    dateFinString?: string;  
     employeeId?: number;
     employee?: Employee;
     actif: boolean;
@@ -167,5 +180,17 @@ export interface Employee {
   vehiculeName: string;
   licensePlate: string;
   horsepower: number;
-  estAffecteAMission: boolean;
+}
+
+export interface VisibleButton{
+  delete:boolean;
+  update:boolean;
+  view:boolean;
+  close:boolean;
+  cancel:boolean;
+}
+
+export interface Team{
+  id:number;
+  employeeId:number;
 }
