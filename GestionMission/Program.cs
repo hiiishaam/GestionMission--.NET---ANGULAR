@@ -37,6 +37,8 @@ builder.Services.AddScoped<ICongeService, CongeService>();
 builder.Services.AddScoped<IMissionService, MissionService>();
 builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IPaimentService, PaimentService>();
+builder.Services.AddScoped<StatistiqueService>();
+
 
 var app = builder.Build();
 

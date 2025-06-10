@@ -108,13 +108,6 @@ export interface Employee {
     commentaire:string;
   }
 
-  // export interface User{
-  //   id: number;
-  //   username : string;
-  //   password:string;
-  //   email:string;
-  //   role:string;
-  // }
   export interface User {
     id: number;
     username: string;
@@ -193,4 +186,9 @@ export interface VisibleButton{
 export interface Team{
   id:number;
   employeeId:number;
+}
+export interface Statistique {
+  type: string;        // Ex: "Missions", "Congés", "Véhicules", "Employés"
+  statut: string;      // Ex: "En cours", "Cloturé", "Terminé", etc.
+  nombre: number;      // Le nombre d'éléments pour ce statut
 }

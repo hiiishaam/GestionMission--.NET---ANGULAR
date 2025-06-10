@@ -125,7 +125,7 @@
        <!-- <mat-select [(ngModel)]="data.data.vehiculeId" required #vehicle="ngModel">-->
         <mat-select [(ngModel)]="data.data.vehiculeId">
           <mat-option *ngFor="let vehicule of vehicules" [value]="vehicule.vehiculeId">
-            {{ vehicule.vehiculeName }}
+            {{ vehicule.vehiculeName + "("+ vehicule.licensePlate + ")"}}
           </mat-option>
         </mat-select>
         <!--  <mat-error *ngIf="vehicle.invalid && vehicle.touched">Veuillez sélectionner un véhicule.</mat-error> -->

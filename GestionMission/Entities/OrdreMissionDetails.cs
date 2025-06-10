@@ -13,9 +13,9 @@
         public string? MOTIF_DEPLACEMENT { get; set; }
         public string? MOYEN_DE_TRANSPORT { get; set; }
         public string? ACCOMPAGNATEURS { get; set; }
-        public string? DATE_DEPART { get; set; }  
-        public string? HEURE_DEPART { get; set; }     
-        public string? DATE_ARRIVEE { get; set; }       
+        public string? DATE_DEPART { get; set; }
+        public string? HEURE_DEPART { get; set; }
+        public string? DATE_ARRIVEE { get; set; }
         public string? HEURE_ARRIVEE { get; set; }
     }
    

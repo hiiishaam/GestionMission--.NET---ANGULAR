@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { Observable, map,throwError } from 'rxjs';
-import {Team, Employee,VehiculeDisponible,EmployeeDisponible,OrdreMissionDetails, Fonction,UpdateMission,UpdateMissionStatus,VisibleButton, Affectation, Vehicule, Mission, Paiement,StatusMission ,User, Conge} from '../model/Models';
+import {Team, Employee,VehiculeDisponible,EmployeeDisponible,OrdreMissionDetails, Fonction,UpdateMission,UpdateMissionStatus,VisibleButton, Affectation, Vehicule, Mission, Paiement,StatusMission ,User, Conge, Statistique} from '../model/Models';
 import {environment } from '../environments/environment';
 import {jsPDF} from 'jspdf';
 
@@ -426,7 +426,7 @@ export class AuthService {
   // Cette méthode pourrait être remplacée par une logique d'authentification réelle
   login(username: string, password: string, rememberMe: boolean): boolean {
     // Exemple simplifié : si l'utilisateur entre "adminuser" et "admin123"
-    if (username === 'HichamAdmin' && password === 'admin123') {
+    if (username === 'admin@cadetaf.com' && password === 'admin123') {
       this._isAuthenticated = true;
       this._user = {
         id: 1,
@@ -781,4 +781,20 @@ export class TeamService {
     map(teams => teams.map(e => e.employeeId))
   );
   }
+}
+
+//ok
+@Injectable({ providedIn: 'root' })
+export class StatistiqueService  {
+  private apiUrl = environment.apiUrl + '/Statistiques';
+ constructor(private http: HttpClient) 
+ {
+
+ }
+ 
+  getStatistiques(): Observable<Statistique[]> {
+    return this.http.get<Statistique[]>(this.apiUrl);
+  }
+
+
 }
